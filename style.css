@@ -357,3 +357,20 @@ a { color: var(--deep-blue); }
   border-radius: 2px;
   padding: 0 1px;
 }
+
+/* Footer links: readable gold on the deep blue footer */
+.site-footer a {
+  color: var(--gold-soft);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.site-footer a:hover { color: var(--ivory); }
+
+/* Brand mark in the header */
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.brand-mark { height: 34px; width: 34px; display: block; }
+.brand-org { color: var(--gold-soft); }
