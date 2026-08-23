@@ -235,6 +235,54 @@
     }
   }
 
+  /* ---- live synthesis: same retrieved material, read by a model that
+     writes a short grounded answer, notes real disagreement, and
+     suggests what to read next. Purely additive — if it fails or is
+     slow, the instant passages above already stand on their own. ---- */
+  function renderSynthesisLoading(box) {
+    var d = document.createElement("div");
+    d.className = "ask-synthesis ask-synthesis-loading";
+    d.innerHTML = '<p class="ask-note">Working out a fuller answer from these sources…</p>';
+    box.appendChild(d);
+    return d;
+  }
+
+  function renderSynthesis(node, data) {
+    if (!data || data.refused || !data.answer) { node.remove(); return; }
+    var html = '<p class="ask-cites-heading">A fuller answer</p><div class="ask-answer"><p>' + esc(data.answer) + "</p></div>";
+    if (data.differ) {
+      html += '<div class="ask-differ"><h4>Where serious minds differ</h4><p>' + esc(data.differ) + "</p></div>";
+    }
+    if (data.articles && data.articles.length) {
+      html += '<div class="ask-articles"><h4>Commentary drawn on</h4>' + data.articles.map(function (a) {
+        return '<p><a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.title) + "</a> &mdash; " + esc(a.author) + ", " + esc(a.publisher) + "</p>";
+      }).join("") + "</div>";
+    }
+    if (data.next && data.next.length) {
+      html += '<div class="ask-next"><h4>Where to go from here</h4><p>' + data.next.map(esc).join(" &middot; ") + "</p></div>";
+    }
+    node.className = "ask-synthesis";
+    node.innerHTML = html;
+  }
+
+  function askLive(q, box) {
+    var node = renderSynthesisLoading(box);
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : null;
+    fetch("/api/ask", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ q: q }),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) { return r.json(); })
+      .then(function (data) {
+        clearTimeout(timer);
+        if (!data || !data.ok) { node.remove(); return; }
+        renderSynthesis(node, data);
+      })
+      .catch(function () { clearTimeout(timer); node.remove(); });
+  }
+
   /* ---- wiring ---- */
   var box, input, button;
 
@@ -254,6 +302,7 @@
         var hits = search(q);
         if (hits.length) renderHits(box, q, hits);
         else renderMiss(box);
+        askLive(q, box);
       })
       .catch(function () { renderFallback(box, q); })
       .finally(function () { setBusy(false); });
