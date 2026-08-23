@@ -1,0 +1,84 @@
+{
+  "updated": "2026-08-23",
+  "note": "The registry of everything Saint Seville can search. kind: corpus = full passage index, quoted and cited in answers. kind: article = indexed commentary, described and linked, never quoted as Church teaching.",
+  "sources": [
+    {
+      "id": "antiqua-et-nova",
+      "kind": "corpus",
+      "docIdx": 0,
+      "tier": "magisterial",
+      "title": "Antiqua et Nova. Note on the Relationship Between Artificial Intelligence and Human Intelligence",
+      "short": "Antiqua et Nova",
+      "author": "Dicastery for the Doctrine of the Faith and Dicastery for Culture and Education",
+      "publisher": "The Holy See",
+      "date": "2025-01-28",
+      "url": "https://www.vatican.va/roman_curia/congregations/cfaith/documents/rc_ddf_doc_20250128_antiqua-et-nova_en.html",
+      "abstract": "The Vatican's doctrinal note on what separates artificial intelligence from human intelligence, with guidance on work, education, healthcare, warfare, and relationships.",
+      "tags": ["human intelligence", "anthropology", "doctrine", "ethics"]
+    },
+    {
+      "id": "magnifica-humanitas",
+      "kind": "corpus",
+      "docIdx": 1,
+      "tier": "magisterial",
+      "title": "Magnifica Humanitas. Encyclical Letter of His Holiness Pope Leo XIV on Safeguarding the Human Person in the Time of Artificial Intelligence",
+      "short": "Magnifica Humanitas",
+      "author": "Pope Leo XIV",
+      "publisher": "The Holy See",
+      "date": "2026-05-15",
+      "url": "https://www.vatican.va/content/leo-xiv/en/encyclicals/documents/20260515-magnifica-humanitas.html",
+      "abstract": "The first papal encyclical devoted to artificial intelligence. Reads the whole tradition of Catholic social teaching into the AI age: dignity, work, truth, freedom, and the refusal to treat machines as persons.",
+      "tags": ["encyclical", "human dignity", "social teaching", "consciousness", "work", "warfare"]
+    },
+    {
+      "id": "compendium-social-doctrine",
+      "kind": "corpus",
+      "docIdx": 2,
+      "tier": "magisterial",
+      "title": "Compendium of the Social Doctrine of the Church",
+      "short": "Compendium",
+      "author": "Pontifical Council for Justice and Peace",
+      "publisher": "The Holy See",
+      "date": "2004-04-02",
+      "url": "https://www.vatican.va/roman_curia/pontifical_councils/justpeace/documents/rc_pc_justpeace_doc_20060526_compendio-dott-soc_en.html",
+      "abstract": "The systematic summary of Catholic social teaching: the human person, the common good, solidarity, subsidiarity, work, economic life, and political community. The foundation the AI documents build on.",
+      "tags": ["social teaching", "common good", "human person", "work"]
+    },
+    {
+      "id": "rome-call",
+      "kind": "corpus",
+      "docIdx": 3,
+      "tier": "official",
+      "title": "The Rome Call for AI Ethics",
+      "short": "Rome Call",
+      "author": "RenAIssance Foundation",
+      "publisher": "RenAIssance Foundation, Vatican City",
+      "date": "2020-02-28",
+      "url": "https://www.romecall.org/the-call/",
+      "abstract": "The Vatican-convened pledge on AI ethics signed by tech companies, governments, and religious leaders. Six principles: transparency, inclusion, responsibility, impartiality, reliability, security and privacy.",
+      "tags": ["algorethics", "principles", "industry", "pledge"]
+    },
+    {
+      "id": "hochschild-ai-conscious-2026",
+      "kind": "article",
+      "tier": "commentary",
+      "title": "No, AI Isn't Conscious. But Saying So Invites Further Discernment",
+      "short": "Hochschild, NC Register",
+      "author": "Joshua Hochschild",
+      "publisher": "National Catholic Register",
+      "date": "2026-06-10",
+      "url": "https://www.ncregister.com/commentaries/no-ai-isn-t-conscious-discernment",
+      "abstract": "A philosopher at Mount St. Mary's University examines Magnifica Humanitas' denial of AI consciousness, notes that the encyclical asserts rather than argues the point, and shows how the classical tradition can supply the missing argument while taking seriously what interpretability research is finding inside these models.",
+      "tags": ["consciousness", "Magnifica Humanitas", "philosophy of mind", "hylomorphism"]
+    }
+  ],
+  "watchlist": [
+    { "publisher": "National Catholic Register", "url": "https://www.ncregister.com", "note": "Commentaries and reporting on AI and the Church" },
+    { "publisher": "The Lamp", "url": "https://thelampmagazine.com", "note": "A Catholic journal of literature, science, the fine arts, etc. Publishes on technology and AI" },
+    { "publisher": "First Things", "url": "https://www.firstthings.com", "note": "Religion and public life journal with frequent AI essays" },
+    { "publisher": "Vatican News", "url": "https://www.vaticannews.va", "note": "Official coverage of papal and dicastery statements on AI" }
+  ],
+  "authors": [
+    { "name": "Joshua Hochschild", "affiliation": "Professor of Philosophy, Mount St. Mary's University", "url": "https://directory.msmary.edu/people/joshua-hochschild.html", "note": "Philosophy of mind, hylomorphism, AI and consciousness. Watch for new commentaries in the Register and elsewhere" }
+  ]
+}
