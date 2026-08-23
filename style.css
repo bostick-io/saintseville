@@ -510,3 +510,40 @@ a { color: var(--deep-blue); }
   font-family: Arial, Helvetica, sans-serif;
   font-size: 0.88rem;
 }
+
+/* Live synthesis, appended below the instant retrieved passages */
+.ask-synthesis {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--stone-line);
+}
+
+.ask-synthesis-loading .ask-note { margin: 0; }
+
+.ask-synthesis .ask-answer p { font-size: 1rem; }
+
+.ask-differ, .ask-next, .ask-articles {
+  background: var(--ivory);
+  border: 1px solid var(--stone-line);
+  border-left: 3px solid var(--deep-blue);
+  border-radius: 0 5px 5px 0;
+  padding: 0.85rem 1.1rem;
+  margin: 0 0 1rem;
+}
+
+.ask-differ h4, .ask-next h4, .ask-articles h4 {
+  margin: 0 0 0.4rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--deep-blue);
+}
+
+.ask-differ p, .ask-next p, .ask-articles p {
+  margin: 0 0 0.3rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.ask-articles p:last-child, .ask-next p:last-child, .ask-differ p:last-child { margin-bottom: 0; }
