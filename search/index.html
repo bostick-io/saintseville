@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D8TJCZJEBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-D8TJCZJEBD');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Search &middot; Saint Seville</title>
+<meta name="description" content="Search the Saint Seville corpus with complete control over which sources are in scope. Rule sources in or out, filter by tier and year, and see exactly what could be searched.">
+<link rel="stylesheet" href="../style.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <a href="../index.html" class="brand-link"><svg class="brand-mark" viewBox="17 2 30 58" fill="none" aria-hidden="true"> <circle cx="32" cy="16.5" r="13" stroke="#c9a24b" stroke-width="2.8"/> <path d="M25.4 23 h13.2 v9 a6.6 6.6 0 0 1 -13.2 0 Z" fill="#f0e2c8" stroke="#1f3a63" stroke-width="1.6" stroke-linejoin="round"/> <circle cx="29.1" cy="27.2" r="1.15" fill="#1f3a63"/> <circle cx="34.9" cy="27.2" r="1.15" fill="#1f3a63"/> <path d="M32 27.8 v2.2" stroke="#1f3a63" stroke-width="1.3" stroke-linecap="round"/> <path d="M25.4 30.5 C26.8 34.6 30.6 35.2 32 31.9 C33.4 35.2 37.2 34.6 38.6 30.5 C40 41.5 37.3 52 32 57 C26.7 52 24 41.5 25.4 30.5 Z" fill="#ffffff" stroke="#1f3a63" stroke-width="1.8" stroke-linejoin="round"/> <path d="M25.5 20.5 L27 10 L32 4 L37 10 L38.5 20.5 Z" fill="#faf7f1" stroke="#16294a" stroke-width="1.6" stroke-linejoin="round"/> <path d="M24.5 20.5 h15 v2.5 h-15 Z" fill="#b08a3e"/> <g stroke="#c9a24b" stroke-width="1.9" stroke-linecap="round"> <path d="M32 9.5v5.6M29.5 12.3h5"/> </g> </svg><span>SaintSeville<span class="brand-org">.org</span></span></a>
+  </div>
+  <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="site-nav" class="site-nav" aria-label="Main">
+    <a href="../index.html">Home</a>
+    <a href="../briefings/index.html">Briefings</a>
+    <a href="../notes/index.html">Notes</a>
+    <a href="../saint/index.html">The Saint</a>
+    <a href="../sources/index.html">Sources</a>
+    <a href="../about/index.html">About</a>
+  </nav>
+</header>
+
+<main class="page page-wide">
+  <p class="eyebrow">Advanced Search</p>
+  <h1>Search with the sources in your hands</h1>
+  <p>Every source Saint Seville can search is listed below, and every one of them can be ruled in or out before you ask. Nothing hidden, nothing beyond the list. What you see in scope is the entire universe your search runs against.</p>
+
+  <div class="search-card search-card-wide">
+    <label for="adv-query" class="search-label">Your question or keywords</label>
+    <div class="search-row">
+      <input id="adv-query" type="text" placeholder="Ask about consciousness, work, warfare, education&hellip;" autocomplete="off">
+      <button type="button" id="adv-go" class="search-button">Search</button>
+    </div>
+    <div class="year-row">
+      <label class="year-label">Published between
+        <input id="year-from" type="number" min="1890" max="2100" placeholder="any"> and
+        <input id="year-to" type="number" min="1890" max="2100" placeholder="any">
+      </label>
+    </div>
+  </div>
+
+  <h2>Sources in scope</h2>
+  <p class="scope-note">The corpus documents are indexed passage by passage; results quote them verbatim with paragraph citations. Indexed commentary is described and linked; the click goes to the publisher, and commentary is never quoted as Church teaching.</p>
+  <div id="scope-corpus" class="source-group"><h3>The approved corpus</h3><p class="loading-note">Loading&hellip;</p></div>
+  <div id="scope-articles" class="source-group"><h3>Indexed commentary</h3><p class="loading-note">Loading&hellip;</p></div>
+
+  <div id="adv-results" class="ask-results" hidden></div>
+</main>
+
+<footer class="site-footer">
+  <p class="footer-brand-row"><span class="footer-brand"><svg class="brand-mark" viewBox="17 2 30 58" fill="none" aria-hidden="true"> <circle cx="32" cy="16.5" r="13" stroke="#c9a24b" stroke-width="2.8"/> <path d="M25.4 23 h13.2 v9 a6.6 6.6 0 0 1 -13.2 0 Z" fill="#f0e2c8" stroke="#1f3a63" stroke-width="1.6" stroke-linejoin="round"/> <circle cx="29.1" cy="27.2" r="1.15" fill="#1f3a63"/> <circle cx="34.9" cy="27.2" r="1.15" fill="#1f3a63"/> <path d="M32 27.8 v2.2" stroke="#1f3a63" stroke-width="1.3" stroke-linecap="round"/> <path d="M25.4 30.5 C26.8 34.6 30.6 35.2 32 31.9 C33.4 35.2 37.2 34.6 38.6 30.5 C40 41.5 37.3 52 32 57 C26.7 52 24 41.5 25.4 30.5 Z" fill="#ffffff" stroke="#1f3a63" stroke-width="1.8" stroke-linejoin="round"/> <path d="M25.5 20.5 L27 10 L32 4 L37 10 L38.5 20.5 Z" fill="#faf7f1" stroke="#16294a" stroke-width="1.6" stroke-linejoin="round"/> <path d="M24.5 20.5 h15 v2.5 h-15 Z" fill="#b08a3e"/> <g stroke="#c9a24b" stroke-width="1.9" stroke-linecap="round"> <path d="M32 9.5v5.6M29.5 12.3h5"/> </g> </svg><span>SaintSeville<span class="brand-org">.org</span></span></span></p>
+  <p class="footer-note">An approved sources only project. Answers cite their source.</p>
+</footer>
+
+<script src="../menu.js"></script>
+<script>
+/* Advanced search: BM25 over the corpus passage index plus keyword match
+   over indexed commentary, with per-source include and exclude controls.
+   Runs entirely in the browser. */
+(function () {
+  "use strict";
+
+  var idx = null, reg = null;
+
+  var STOP = {};
+  ("a an and are as at be but by for from has have how i in is it its of on or " +
+   "so that the their there these this to was we what when where which who why " +
+   "will with about does do did can could should would may might must not no if")
+    .split(" ").forEach(function (w) { STOP[w] = 1; });
+
+  function tokens(s) {
+    return String(s).toLowerCase().replace(/[’']/g, "")
+      .split(/[^a-z0-9]+/)
+      .filter(function (w) { return w.length > 1 && !STOP[w]; });
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function highlight(text, q) {
+    var out = esc(text);
+    tokens(q).forEach(function (t) {
+      if (t.length < 3) return;
+      out = out.replace(new RegExp("(^|[^A-Za-z])(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi"), "$1<mark>$2</mark>");
+    });
+    return out;
+  }
+
+  function year(dateStr) {
+    var m = /^(\d{4})/.exec(String(dateStr || ""));
+    return m ? +m[1] : null;
+  }
+
+  var TIER_LABEL = { magisterial: "Magisterial", official: "Official", scholarly: "Scholarly", journalism: "Journalism", commentary: "Commentary" };
+
+  function load() {
+    return Promise.all([
+      fetch("../index.json").then(function (r) { if (!r.ok) throw 0; return r.json(); }),
+      fetch("../sources.json").then(function (r) { if (!r.ok) throw 0; return r.json(); })
+    ]).then(function (both) { idx = both[0]; reg = both[1]; });
+  }
+
+  function passageCounts() {
+    var c = {};
+    idx.meta.forEach(function (m) { c[m[0]] = (c[m[0]] || 0) + 1; });
+    return c;
+  }
+
+  function renderScope() {
+    var counts = passageCounts();
+    var corpusBox = document.getElementById("scope-corpus");
+    var artBox = document.getElementById("scope-articles");
+    var corpus = reg.sources.filter(function (s) { return s.kind === "corpus"; });
+    var arts = reg.sources.filter(function (s) { return s.kind === "article"; });
+
+    function row(s, extra) {
+      return '<label class="src-row"><input type="checkbox" class="src-check" data-id="' + esc(s.id) + '" checked> ' +
+        '<span class="src-main"><span class="tier-badge tier-' + esc(s.tier) + '">' + esc(TIER_LABEL[s.tier] || s.tier) + "</span> " +
+        "<strong>" + esc(s.short || s.title) + "</strong> &middot; " + esc(s.author) + ", " + esc(String(s.date).slice(0, 4)) + extra +
+        ' &middot; <a href="' + esc(s.url) + '" target="_blank" rel="noopener">original</a></span></label>';
+    }
+
+    corpusBox.innerHTML = "<h3>The approved corpus</h3><p>Indexed passage by passage. Results quote these verbatim, with paragraph citations.</p>" +
+      corpus.map(function (s) {
+        var n = counts[s.docIdx] || 0;
+        return row(s, " &middot; " + n + " passages");
+      }).join("") +
+      '<p class="scope-tools"><button type="button" class="mini-btn" data-set="corpus" data-val="1">All corpus</button> <button type="button" class="mini-btn" data-set="corpus" data-val="0">No corpus</button></p>';
+
+    artBox.innerHTML = "<h3>Indexed commentary</h3><p>Described and linked. The click goes to the publisher.</p>" +
+      (arts.length ? arts.map(function (s) { return row(s, ""); }).join("") :
+        "<p>No commentary indexed yet.</p>") +
+      '<p class="scope-tools"><button type="button" class="mini-btn" data-set="article" data-val="1">All commentary</button> <button type="button" class="mini-btn" data-set="article" data-val="0">No commentary</button></p>';
+
+    document.querySelectorAll(".mini-btn").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var kind = b.getAttribute("data-set"), val = b.getAttribute("data-val") === "1";
+        reg.sources.forEach(function (s) {
+          if (s.kind === kind) {
+            var el = document.querySelector('.src-check[data-id="' + s.id + '"]');
+            if (el) el.checked = val;
+          }
+        });
+      });
+    });
+  }
+
+  function allowedSets() {
+    var yFrom = +document.getElementById("year-from").value || null;
+    var yTo = +document.getElementById("year-to").value || null;
+    var okDoc = {}, okArt = {};
+    reg.sources.forEach(function (s) {
+      var el = document.querySelector('.src-check[data-id="' + s.id + '"]');
+      if (!el || !el.checked) return;
+      var y = year(s.date);
+      if (yFrom && y && y < yFrom) return;
+      if (yTo && y && y > yTo) return;
+      if (s.kind === "corpus") okDoc[s.docIdx] = s;
+      else okArt[s.id] = s;
+    });
+    return { docs: okDoc, arts: okArt };
+  }
+
+  function searchCorpus(q, okDoc) {
+    var qts = tokens(q);
+    if (!qts.length) return [];
+    var seen = {};
+    qts = qts.filter(function (t) { if (seen[t]) return false; seen[t] = 1; return true; });
+    var N = idx.meta.length;
+    var informative = qts.filter(function (t) {
+      return idx.terms[t] && idx.terms[t].length / 2 < N * 0.25;
+    });
+    var isInf = {};
+    informative.forEach(function (t) { isInf[t] = 1; });
+    var scores = {}, covered = {};
+    var k1 = 1.4, b = 0.6;
+    qts.forEach(function (t) {
+      var post = idx.terms[t];
+      if (!post) return;
+      var df = post.length / 2;
+      var idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
+      for (var j = 0; j < post.length; j += 2) {
+        var i = post[j], tf = post[j + 1];
+        if (!okDoc[idx.meta[i][0]]) continue;
+        var norm = tf * (k1 + 1) / (tf + k1 * (1 - b + b * idx.lengths[i] / idx.avgLen));
+        scores[i] = (scores[i] || 0) + idf * norm;
+        if (isInf[t]) covered[i] = (covered[i] || 0) + 1;
+      }
+    });
+    var need = Math.min(3, Math.ceil(informative.length / 2));
+    var hits = Object.keys(scores).filter(function (i) {
+      return (covered[i] || 0) >= need;
+    }).map(function (i) { return { i: +i, score: scores[i] }; });
+    hits.sort(function (a, b2) { return b2.score - a.score; });
+    return hits.slice(0, 8).filter(function (h) { return h.score >= 3.0; });
+  }
+
+  function searchArticles(q, okArt) {
+    var qts = tokens(q);
+    if (!qts.length) return [];
+    var out = [];
+    Object.keys(okArt).forEach(function (id) {
+      var s = okArt[id];
+      var hay = (s.title + " " + (s.abstract || "") + " " + (s.tags || []).join(" ") + " " + s.author).toLowerCase();
+      var score = 0;
+      qts.forEach(function (t) { if (hay.indexOf(t) !== -1) score += 1; });
+      if (score > 0) out.push({ s: s, score: score });
+    });
+    out.sort(function (a, b) { return b.score - a.score; });
+    return out.slice(0, 6);
+  }
+
+  function run() {
+    var q = document.getElementById("adv-query").value.trim();
+    var box = document.getElementById("adv-results");
+    if (q.length < 3) return;
+    var ok = allowedSets();
+    var cHits = searchCorpus(q, ok.docs);
+    var aHits = searchArticles(q, ok.arts);
+    box.hidden = false;
+    var html = "";
+    var nDocs = Object.keys(ok.docs).length, nArts = Object.keys(ok.arts).length;
+    html += '<div class="ask-answer"><p>Results for <strong>' + esc(q) + "</strong> across " + nDocs + " corpus document" + (nDocs === 1 ? "" : "s") + " and " + nArts + " commentary entr" + (nArts === 1 ? "y" : "ies") + " in scope:</p></div>";
+    if (cHits.length) {
+      html += '<p class="ask-cites-heading">From the approved corpus</p>';
+      html += cHits.map(function (h) {
+        var m = idx.meta[h.i], d = idx.docs[m[0]];
+        return '<blockquote class="ask-passage"><p>' + highlight(idx.excerpts[h.i], q) + "</p>" +
+          '<footer><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.cite + " §" + m[1]) + " &mdash; read the full text</a></footer></blockquote>";
+      }).join("");
+    }
+    if (aHits.length) {
+      html += '<p class="ask-cites-heading">From indexed commentary</p>';
+      html += aHits.map(function (h) {
+        var s = h.s;
+        return '<div class="article-card"><p class="article-meta"><span class="tier-badge tier-' + esc(s.tier) + '">' + esc(TIER_LABEL[s.tier] || s.tier) + "</span> " + esc(s.publisher) + " &middot; " + esc(String(s.date).slice(0, 4)) + '</p><p class="article-title"><a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + "</a></p><p class=\"article-abstract\">" + esc(s.abstract || "") + "</p><p class=\"article-byline\">" + esc(s.author) + "</p></div>";
+      }).join("");
+    }
+    if (!cHits.length && !aHits.length) {
+      html += '<p class="ask-note">Nothing in the sources you left in scope speaks to that. Widen the scope above, or try the themes the corpus covers: AI and human dignity, consciousness, work, education, warfare, truth, the common good.</p>';
+    } else {
+      html += '<p class="ask-note">Corpus excerpts are quoted verbatim with official paragraph numbers. Commentary entries are our own descriptions; follow the link to read the author in full.</p>';
+    }
+    box.innerHTML = html;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    load().then(function () {
+      renderScope();
+      var params = new URLSearchParams(window.location.search);
+      var q = params.get("q");
+      if (q) {
+        document.getElementById("adv-query").value = q;
+        run();
+      }
+    }).catch(function () {
+      document.getElementById("scope-corpus").innerHTML = "<h3>The approved corpus</h3><p>The source registry could not be loaded. Please reload the page.</p>";
+      document.getElementById("scope-articles").innerHTML = "";
+    });
+    document.getElementById("adv-go").addEventListener("click", run);
+    document.getElementById("adv-query").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") run();
+    });
+  });
+})();
+</script>
+</body>
+</html>
