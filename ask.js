@@ -250,9 +250,15 @@
   function renderSynthesis(node, data) {
     if (!data || data.refused || !data.answer) { node.remove(); return; }
     var html = '<p class="ask-cites-heading">A fuller answer</p><div class="ask-answer"><p>' + esc(data.answer) + "</p></div>";
-    if (data.differ) {
-      html += '<div class="ask-differ"><h4>Where serious minds differ</h4><p>' + esc(data.differ) + "</p></div>";
-    }
+    /* Always render this block. When the retrieved sources genuinely
+       disagree it carries the disagreement; when they do not it explains
+       what the section is for, so the capability is visible either way. */
+    html += '<div class="ask-differ' + (data.differ ? "" : " ask-differ-none") + '">' +
+      "<h4>Where serious minds differ</h4><p>" +
+      (data.differ
+        ? esc(data.differ)
+        : "The sources retrieved for this question line up with one another. When they pull in different directions, this is where the disagreement gets named, with each position attributed to whoever holds it.") +
+      "</p></div>";
     if (data.articles && data.articles.length) {
       html += '<div class="ask-articles"><h4>Commentary drawn on</h4>' + data.articles.map(function (a) {
         return '<p><a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.title) + "</a> &mdash; " + esc(a.author) + ", " + esc(a.publisher) + "</p>";
