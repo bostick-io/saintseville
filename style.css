@@ -547,3 +547,7 @@ a { color: var(--deep-blue); }
 }
 
 .ask-articles p:last-child, .ask-next p:last-child, .ask-differ p:last-child { margin-bottom: 0; }
+
+/* Empty state: sources agree, so explain what the section is for */
+.ask-differ-none { border-left-color: var(--stone-line); }
+.ask-differ-none p { font-style: italic; }
