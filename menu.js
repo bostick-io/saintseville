@@ -15,3 +15,15 @@
     }
   });
 })();
+
+/* Vercel Web Analytics. Loaded here rather than in each page because every
+   page already pulls menu.js, so this covers the whole site from one file.
+   No cookies, so no consent banner is required. Pageviews, referrers,
+   device type, and country appear under Analytics in the Vercel project. */
+(function () {
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  var s = document.createElement('script');
+  s.defer = true;
+  s.src = '/_vercel/insights/script.js';
+  document.head.appendChild(s);
+})();
