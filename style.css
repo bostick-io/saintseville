@@ -924,3 +924,52 @@ mark.reg-hit { background: rgba(201,162,75,.38); color: inherit; border-radius: 
   font-size: 0.85rem;
   color: var(--ink-soft);
 }
+
+/* ---- Register deep links ----
+   The address bar carries the filter, so a view of the register is a
+   thing you can send. These two controls are what make that visible: one
+   copies the current view, the other links a single entry. */
+.reg-chip-copy {
+  margin-left: auto;
+  border-style: dashed;
+}
+
+.entry-permalink {
+  margin-left: 0.45rem;
+  font-size: 0.8em;
+  color: var(--stone-line);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.16s ease, color 0.16s ease;
+}
+
+.entry-card:hover .entry-permalink,
+.entry-permalink:focus-visible {
+  opacity: 1;
+  color: var(--gold);
+}
+
+.entry-permalink:hover { color: var(--gold-soft); }
+
+/* Arriving from a link that names one entry, so it is obvious which one
+   the sender meant. */
+.reg-landed {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.28);
+  animation: reg-land 2.6s ease;
+}
+
+@keyframes reg-land {
+  0% { box-shadow: 0 0 0 6px rgba(201, 162, 75, 0.45); }
+  100% { box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.28); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-permalink { transition: none; }
+  .reg-landed { animation: none; }
+}
+
+@media (max-width: 560px) {
+  .reg-chip-copy { margin-left: 0; }
+  .entry-permalink { opacity: 1; color: var(--stone-line); }
+}
