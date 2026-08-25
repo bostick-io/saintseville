@@ -232,6 +232,44 @@
     "transhumanism",
     "imaginaries"
    ]
+  },
+  {
+   "id": "cambridge-companion-religion-ai-2024",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "The Cambridge Companion to Religion and Artificial Intelligence",
+   "short": "Cambridge Companion",
+   "author": "Beth Singler and Fraser Watts, editors",
+   "publisher": "Cambridge University Press",
+   "date": "2024-01-01",
+   "url": "https://www.cambridge.org/core/books/cambridge-companion-to-religion-and-artificial-intelligence/867462871532038FDE79B253EA9A3C15",
+   "abstract": "The reference volume for the field, edited by two scholars of religion rather than theologians. Its chapters run across traditions, so most of it sits well outside Catholic thought, but chapter 6 on Christianity and chapter 10 on AI ethics are the ones that touch this corpus. Indexed as commentary and as a map of who else is working the question.",
+   "tags": [
+    "reference",
+    "religious studies",
+    "survey",
+    "Singler",
+    "Watts"
+   ]
+  },
+  {
+   "id": "dorobantu-ai-and-christianity-2024",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Artificial Intelligence and Christianity: Friends or Foes?",
+   "short": "Dorobantu, Cambridge Companion",
+   "author": "Marius Dorobantu",
+   "publisher": "The Cambridge Companion to Religion and Artificial Intelligence, chapter 6",
+   "date": "2024-01-01",
+   "url": "https://doi.org/10.1017/9781009031721.007",
+   "abstract": "A survey of Christian theological reflection on artificial intelligence, organised around two questions. Could a machine become an authentic self, bear the image of God, or sin, and what does our fascination with building an intelligent other reveal about theological anthropology. The author writes from a Protestant faculty at VU Amsterdam, and the chapter is heavily engaged with imago Dei. Its bibliography is the most useful single map of the field we have found.",
+   "tags": [
+    "imago Dei",
+    "theological anthropology",
+    "survey",
+    "personhood",
+    "AGI"
+   ]
   }
  ],
  "watchlist": [
