@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D8TJCZJEBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-D8TJCZJEBD');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suggest an addition &middot; Saint Seville</title>
+<meta name="description" content="Propose a person, institute or article for the Saint Seville commentary register. Reviewed by hand against a published policy.">
+<link rel="stylesheet" href="../../style.css">
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <a href="../../index.html" class="brand-link"><svg class="brand-mark" viewBox="17 2 30 58" fill="none" aria-hidden="true"> <circle cx="32" cy="16.5" r="13" stroke="#c9a24b" stroke-width="2.8"/> <path d="M25.4 23 h13.2 v9 a6.6 6.6 0 0 1 -13.2 0 Z" fill="#f0e2c8" stroke="#1f3a63" stroke-width="1.6" stroke-linejoin="round"/> <circle cx="29.1" cy="27.2" r="1.15" fill="#1f3a63"/> <circle cx="34.9" cy="27.2" r="1.15" fill="#1f3a63"/> <path d="M32 27.8 v2.2" stroke="#1f3a63" stroke-width="1.3" stroke-linecap="round"/> <path d="M25.4 30.5 C26.8 34.6 30.6 35.2 32 31.9 C33.4 35.2 37.2 34.6 38.6 30.5 C40 41.5 37.3 52 32 57 C26.7 52 24 41.5 25.4 30.5 Z" fill="#ffffff" stroke="#1f3a63" stroke-width="1.8" stroke-linejoin="round"/> <path d="M25.5 20.5 L27 10 L32 4 L37 10 L38.5 20.5 Z" fill="#faf7f1" stroke="#16294a" stroke-width="1.6" stroke-linejoin="round"/> <path d="M24.5 20.5 h15 v2.5 h-15 Z" fill="#b08a3e"/> <g stroke="#c9a24b" stroke-width="1.9" stroke-linecap="round"> <path d="M32 9.5v5.6M29.5 12.3h5"/> </g> </svg><span>SaintSeville<span class="brand-org">.org</span></span></a>
+  </div>
+  <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="site-nav" class="site-nav" aria-label="Main">
+    <a href="../../index.html">Home</a>
+    <a href="../../briefings/index.html">Briefings</a>
+    <a href="../../thinkers/index.html">Thinkers</a>
+    <a href="../../notes/index.html">Notes</a>
+    <a href="../../saint/index.html">The Saint</a>
+    <a href="../../sources/index.html">Sources</a>
+    <a href="../../about/index.html">About</a>
+  </nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Intake</p>
+  <h1>Suggest an addition</h1>
+  <p>The register is incomplete and will stay that way without help. If we have missed a person, an institute, or a piece of writing that belongs, send it over.</p>
+  <p class="scope-box">Read <a href="../policy/index.html">what gets indexed and what does not</a> first. It will save you the trouble of sending something we are going to decline. Every submission is reviewed by hand against those rules. Nothing publishes automatically, and we do not index anonymous commentary.</p>
+
+  <form id="suggest-form" class="suggest-form">
+    <label class="sf-label" for="sf-kind">What is it</label>
+    <select id="sf-kind" class="sf-input">
+      <option>A person</option>
+      <option>An institute or centre</option>
+      <option>An article, paper or book</option>
+      <option>A correction to an existing entry</option>
+    </select>
+
+    <label class="sf-label" for="sf-name">Name</label>
+    <input id="sf-name" class="sf-input" type="text" placeholder="Who or what">
+
+    <label class="sf-label" for="sf-affil">Affiliation or publisher</label>
+    <input id="sf-affil" class="sf-input" type="text" placeholder="Where they sit">
+
+    <label class="sf-label" for="sf-link">Link</label>
+    <input id="sf-link" class="sf-input" type="url" placeholder="https://">
+
+    <label class="sf-label" for="sf-argues">What do they actually argue</label>
+    <textarea id="sf-argues" class="sf-input" rows="4" placeholder="A sentence or two. Specific beats general."></textarea>
+
+    <label class="sf-label" for="sf-why">Why does it belong here</label>
+    <textarea id="sf-why" class="sf-input" rows="3" placeholder="Especially useful if it is a position we currently have no one holding."></textarea>
+
+    <label class="sf-label" for="sf-you">Your name and email</label>
+    <input id="sf-you" class="sf-input" type="text" placeholder="So we can come back to you">
+
+    <button type="submit" class="search-button sf-submit">Send suggestion</button>
+    <p class="ask-note" id="sf-note">This opens your mail client with the details filled in. We do not run trackers on this form and we do not store anything you type here.</p>
+  </form>
+</main>
+
+<script>
+(function () {
+  var f = document.getElementById("suggest-form");
+  if (!f) return;
+  function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : ""; }
+  f.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = v("sf-name") || "untitled suggestion";
+    var body = [
+      "Kind: " + v("sf-kind"),
+      "Name: " + v("sf-name"),
+      "Affiliation: " + v("sf-affil"),
+      "Link: " + v("sf-link"),
+      "",
+      "What they argue:",
+      v("sf-argues"),
+      "",
+      "Why it belongs:",
+      v("sf-why"),
+      "",
+      "From: " + v("sf-you")
+    ].join("\n");
+    window.location.href = "mailto:paul@bostick.org"
+      + "?subject=" + encodeURIComponent("Saint Seville register: " + name)
+      + "&body=" + encodeURIComponent(body);
+    document.getElementById("sf-note").textContent = "Your mail client should have opened with the details filled in. If it did not, send the same details to paul@bostick.org.";
+  });
+})();
+</script>
+
+<footer class="site-footer">
+  <p class="footer-brand-row"><span class="footer-brand"><svg class="brand-mark" viewBox="17 2 30 58" fill="none" aria-hidden="true"> <circle cx="32" cy="16.5" r="13" stroke="#c9a24b" stroke-width="2.8"/> <path d="M25.4 23 h13.2 v9 a6.6 6.6 0 0 1 -13.2 0 Z" fill="#f0e2c8" stroke="#1f3a63" stroke-width="1.6" stroke-linejoin="round"/> <circle cx="29.1" cy="27.2" r="1.15" fill="#1f3a63"/> <circle cx="34.9" cy="27.2" r="1.15" fill="#1f3a63"/> <path d="M32 27.8 v2.2" stroke="#1f3a63" stroke-width="1.3" stroke-linecap="round"/> <path d="M25.4 30.5 C26.8 34.6 30.6 35.2 32 31.9 C33.4 35.2 37.2 34.6 38.6 30.5 C40 41.5 37.3 52 32 57 C26.7 52 24 41.5 25.4 30.5 Z" fill="#ffffff" stroke="#1f3a63" stroke-width="1.8" stroke-linejoin="round"/> <path d="M25.5 20.5 L27 10 L32 4 L37 10 L38.5 20.5 Z" fill="#faf7f1" stroke="#16294a" stroke-width="1.6" stroke-linejoin="round"/> <path d="M24.5 20.5 h15 v2.5 h-15 Z" fill="#b08a3e"/> <g stroke="#c9a24b" stroke-width="1.9" stroke-linecap="round"> <path d="M32 9.5v5.6M29.5 12.3h5"/> </g> </svg><span>SaintSeville<span class="brand-org">.org</span></span></span></p>
+  <p class="footer-note">An approved sources only project. Answers cite their source.</p>
+</footer>
+
+<script src="../../menu.js"></script>
+</body>
+</html>
