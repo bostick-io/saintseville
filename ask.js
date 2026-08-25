@@ -20,10 +20,22 @@
 (function () {
   "use strict";
 
+  /* Used only to decide what to highlight inside a passage. It covers
+     five languages now, because highlighting every "che" and "die" in a
+     quoted Vatican paragraph turns the passage into a smear of yellow
+     and hides the words the reader actually asked about. */
   var STOP = {};
   ("a an and are as at be but by for from has have how i in is it its of on or " +
    "so that the their there these this to was we what when where which who why " +
-   "will with about does do did can could should would may might must not no if")
+   "will with about does do did can could should would may might must not no if " +
+   "che chi cosa come dice dice dei del della delle dello degli con per non " +
+   "una uno gli lei loro nel nella sono essere piu quando dove perche " +
+   "que quien como dice los las del las una uno por para con sus sea ser mas " +
+   "cuando donde porque sobre este esta estos entre " +
+   "qui quoi comme dit les des dans une pour avec sont etre plus quand " +
+   "ou pourquoi sur cette ces leur leurs " +
+   "was wie sagt der die das den dem des ein eine einen fur mit sind sein mehr " +
+   "wenn wo warum uber diese dieser ihre ihren nicht auch noch")
     .split(" ").forEach(function (w) { STOP[w] = 1; });
 
   /* Only used to decide what to highlight in a passage. Scoring lives
@@ -214,7 +226,8 @@
       "<h4>" + esc(L("ask.differ")) + "</h4><p>" +
       (data.differ
         ? esc(data.differ)
-        : "The sources retrieved for this question line up with one another. When they pull in different directions, this is where the disagreement gets named, with each position attributed to whoever holds it. Seven live ones are set out in the <a href=\"thinkers/index.html#differ\">register of who is arguing about this</a>.") +
+        : esc(L("ask.differNone")) + ' <a href="thinkers/index.html#differ">' +
+          esc(L("ask.differRegister")) + "</a>") +
       "</p></div>";
     if (data.articles && data.articles.length) {
       html += '<div class="ask-articles"><h4>' + esc(L("ask.commentary")) + "</h4>" + data.articles.map(function (a) {
