@@ -27,6 +27,7 @@
   <nav id="site-nav" class="site-nav" aria-label="Main">
     <a href="../index.html">Home</a>
     <a href="../briefings/index.html">Briefings</a>
+    <a href="../thinkers/index.html">Thinkers</a>
     <a href="../notes/index.html">Notes</a>
     <a href="../saint/index.html">The Saint</a>
     <a href="../sources/index.html">Sources</a>
@@ -74,7 +75,7 @@
 (function () {
   "use strict";
 
-  var idx = null, reg = null;
+  var reg = null;
 
   var STOP = {};
   ("a an and are as at be but by for from has have how i in is it its of on or " +
@@ -110,16 +111,20 @@
 
   var TIER_LABEL = { magisterial: "Magisterial", official: "Official", scholarly: "Scholarly", journalism: "Journalism", commentary: "Commentary" };
 
+  /* Only the registry is fetched now. Passage counts are stamped into
+     sources.json when the index is built, so this page never has to pull
+     the index down just to print a number next to a tick box. */
   function load() {
-    return Promise.all([
-      fetch("../index.json").then(function (r) { if (!r.ok) throw 0; return r.json(); }),
-      fetch("../sources.json").then(function (r) { if (!r.ok) throw 0; return r.json(); })
-    ]).then(function (both) { idx = both[0]; reg = both[1]; });
+    return fetch("../sources.json")
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (data) { reg = data; });
   }
 
   function passageCounts() {
     var c = {};
-    idx.meta.forEach(function (m) { c[m[0]] = (c[m[0]] || 0) + 1; });
+    reg.sources.forEach(function (s) {
+      if (s.kind === "corpus" && typeof s.docIdx === "number") c[s.docIdx] = s.passages || 0;
+    });
     return c;
   }
 
@@ -178,40 +183,6 @@
     return { docs: okDoc, arts: okArt };
   }
 
-  function searchCorpus(q, okDoc) {
-    var qts = tokens(q);
-    if (!qts.length) return [];
-    var seen = {};
-    qts = qts.filter(function (t) { if (seen[t]) return false; seen[t] = 1; return true; });
-    var N = idx.meta.length;
-    var informative = qts.filter(function (t) {
-      return idx.terms[t] && idx.terms[t].length / 2 < N * 0.25;
-    });
-    var isInf = {};
-    informative.forEach(function (t) { isInf[t] = 1; });
-    var scores = {}, covered = {};
-    var k1 = 1.4, b = 0.6;
-    qts.forEach(function (t) {
-      var post = idx.terms[t];
-      if (!post) return;
-      var df = post.length / 2;
-      var idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
-      for (var j = 0; j < post.length; j += 2) {
-        var i = post[j], tf = post[j + 1];
-        if (!okDoc[idx.meta[i][0]]) continue;
-        var norm = tf * (k1 + 1) / (tf + k1 * (1 - b + b * idx.lengths[i] / idx.avgLen));
-        scores[i] = (scores[i] || 0) + idf * norm;
-        if (isInf[t]) covered[i] = (covered[i] || 0) + 1;
-      }
-    });
-    var need = Math.min(3, Math.ceil(informative.length / 2));
-    var hits = Object.keys(scores).filter(function (i) {
-      return (covered[i] || 0) >= need;
-    }).map(function (i) { return { i: +i, score: scores[i] }; });
-    hits.sort(function (a, b2) { return b2.score - a.score; });
-    return hits.slice(0, 8).filter(function (h) { return h.score >= 3.0; });
-  }
-
   function searchArticles(q, okArt) {
     var qts = tokens(q);
     if (!qts.length) return [];
@@ -227,38 +198,65 @@
     return out.slice(0, 6);
   }
 
+  /* Retrieval moved to /api/search so this page no longer downloads the
+     whole term index. The reader's tick boxes, tiers and year range are
+     resolved to document indexes here and sent along, so the filtering
+     stays exactly as strict as it looks. */
   function run() {
     var q = document.getElementById("adv-query").value.trim();
     var box = document.getElementById("adv-results");
     if (q.length < 3) return;
     var ok = allowedSets();
-    var cHits = searchCorpus(q, ok.docs);
-    var aHits = searchArticles(q, ok.arts);
+    var docIdxs = Object.keys(ok.docs).map(Number);
+    var artIds = Object.keys(ok.arts);
+    var nDocs = docIdxs.length, nArts = artIds.length;
+
     box.hidden = false;
-    var html = "";
-    var nDocs = Object.keys(ok.docs).length, nArts = Object.keys(ok.arts).length;
-    html += '<div class="ask-answer"><p>Results for <strong>' + esc(q) + "</strong> across " + nDocs + " corpus document" + (nDocs === 1 ? "" : "s") + " and " + nArts + " commentary entr" + (nArts === 1 ? "y" : "ies") + " in scope:</p></div>";
-    if (cHits.length) {
-      html += '<p class="ask-cites-heading">From the approved corpus</p>';
-      html += cHits.map(function (h) {
-        var m = idx.meta[h.i], d = idx.docs[m[0]];
-        return '<blockquote class="ask-passage"><p>' + highlight(idx.excerpts[h.i], q) + "</p>" +
-          '<footer><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.cite + " §" + m[1]) + " &middot; read the full text</a></footer></blockquote>";
-      }).join("");
+    box.innerHTML = '<p class="ask-note">Searching the sources you left in scope…</p>';
+
+    if (!nDocs && !nArts) {
+      box.innerHTML = '<p class="ask-note">Every source is ruled out. Tick at least one above.</p>';
+      return;
     }
-    if (aHits.length) {
-      html += '<p class="ask-cites-heading">From indexed commentary</p>';
-      html += aHits.map(function (h) {
-        var s = h.s;
-        return '<div class="article-card"><p class="article-meta"><span class="tier-badge tier-' + esc(s.tier) + '">' + esc(TIER_LABEL[s.tier] || s.tier) + "</span> " + esc(s.publisher) + " &middot; " + esc(String(s.date).slice(0, 4)) + '</p><p class="article-title"><a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + "</a></p><p class=\"article-abstract\">" + esc(s.abstract || "") + "</p><p class=\"article-byline\">" + esc(s.author) + "</p></div>";
-      }).join("");
-    }
-    if (!cHits.length && !aHits.length) {
-      html += '<p class="ask-note">Nothing in the sources you left in scope speaks to that. Widen the scope above, or try the themes the corpus covers: AI and human dignity, consciousness, work, education, warfare, truth, the common good.</p>';
-    } else {
-      html += '<p class="ask-note">Corpus excerpts are quoted verbatim with official paragraph numbers. Commentary entries are our own descriptions; follow the link to read the author in full.</p>';
-    }
-    box.innerHTML = html;
+
+    fetch("/api/search", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ q: q, docs: docIdxs, articleIds: artIds, limit: 8 })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.ok) throw new Error("search failed");
+        var html = "";
+        html += '<div class="ask-answer"><p>Results for <strong>' + esc(q) + "</strong> across " + nDocs + " corpus document" + (nDocs === 1 ? "" : "s") + " and " + nArts + " commentary entr" + (nArts === 1 ? "y" : "ies") + " in scope:</p></div>";
+        var cHits = data.passages || [];
+        var aHits = (data.articles || []).map(function (a) {
+          return ok.arts[a.id] || a;
+        });
+        if (cHits.length) {
+          html += '<p class="ask-cites-heading">From the approved corpus</p>';
+          html += cHits.map(function (h) {
+            return '<blockquote class="ask-passage"><p>' + highlight(h.text, q) + "</p>" +
+              '<footer><a href="' + esc(h.url) + '" target="_blank" rel="noopener">' + esc(h.cite) + " &middot; read the full text</a></footer></blockquote>";
+          }).join("");
+        }
+        if (aHits.length) {
+          html += '<p class="ask-cites-heading">From indexed commentary</p>';
+          html += aHits.map(function (sIn) {
+            var s2 = sIn;
+            return '<div class="article-card"><p class="article-meta"><span class="tier-badge tier-' + esc(s2.tier) + '">' + esc(TIER_LABEL[s2.tier] || s2.tier) + "</span> " + esc(s2.publisher) + " &middot; " + esc(String(s2.date).slice(0, 4)) + '</p><p class="article-title"><a href="' + esc(s2.url) + '" target="_blank" rel="noopener">' + esc(s2.title) + "</a></p><p class=\"article-abstract\">" + esc(s2.abstract || "") + "</p><p class=\"article-byline\">" + esc(s2.author) + "</p></div>";
+          }).join("");
+        }
+        if (!cHits.length && !aHits.length) {
+          html += '<p class="ask-note">Nothing in the sources you left in scope speaks to that. Widen the scope above, or try the themes the corpus covers: AI and human dignity, consciousness, work, education, warfare, truth, the common good.</p>';
+        } else {
+          html += '<p class="ask-note">Corpus excerpts are quoted verbatim with official paragraph numbers. Commentary entries are our own descriptions; follow the link to read the author in full.</p>';
+        }
+        box.innerHTML = html;
+      })
+      .catch(function () {
+        box.innerHTML = '<p class="ask-note">The search service is unavailable right now. Try again in a moment.</p>';
+      });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
