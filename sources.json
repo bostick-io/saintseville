@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-23",
+ "updated": "2026-08-25",
  "note": "The registry of everything Saint Seville can search. kind: corpus = full passage index, quoted and cited in answers. kind: article = indexed commentary, described and linked, never quoted as Church teaching.",
  "sources": [
   {
@@ -120,6 +120,117 @@
     "public discourse",
     "human dignity",
     "colonialism"
+   ]
+  },
+  {
+   "id": "jmt-ai-special-issue-2022",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Journal of Moral Theology, Volume 11, Special Issue 1: Artificial Intelligence",
+   "short": "JMT AI special issue",
+   "author": "Matthew J. Gaudet and Brian Patrick Green, editors",
+   "publisher": "Journal of Moral Theology",
+   "date": "2022-04-01",
+   "url": "https://jmt.scholasticahq.com/issue/4236",
+   "abstract": "The themed issue that gave Catholic moral theology on artificial intelligence an academic home. Opens with an interview with Bishop Paul Tighe and a multi-author conversation piece including Jordan Joseph Wales, then runs research articles on social control, moral agency, work and theological anthropology. Open access under CC BY, and mirrored by the Pontifical Academy for Life. Commentary rather than teaching, and indexed here as the venue where much of the register argues with itself.",
+   "tags": [
+    "moral theology",
+    "academic",
+    "special issue",
+    "open access",
+    "Gaudet",
+    "Green"
+   ]
+  },
+  {
+   "id": "vicini-ai-social-control-2022",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Artificial Intelligence and Social Control: Ethical Issues and Theological Resources",
+   "short": "Vicini, JMT",
+   "author": "Andrea Vicini, SJ",
+   "publisher": "Journal of Moral Theology 11, special issue 1",
+   "date": "2022-04-01",
+   "url": "https://jmt.scholasticahq.com/article/34123-artificial-intelligence-and-social-control-ethical-issues-and-theological-resources",
+   "abstract": "A Jesuit bioethicist at Boston College reads artificial intelligence as an instrument of social control, working through facial recognition, the use of AI inside the justice system and its use in workplaces. He brings an analysis of biopower together with Catholic social teaching as the resources for a response.",
+   "tags": [
+    "surveillance",
+    "social control",
+    "facial recognition",
+    "work",
+    "Catholic social teaching"
+   ]
+  },
+  {
+   "id": "graves-theological-foundations-2022",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Theological Foundations for Moral Artificial Intelligence",
+   "short": "Graves, JMT",
+   "author": "Mark Graves",
+   "publisher": "Journal of Moral Theology 11, special issue 1",
+   "date": "2022-04-01",
+   "url": "https://jmt.scholasticahq.com/article/34130-theological-foundations-for-moral-artificial-intelligence",
+   "abstract": "Argues that theological anthropology can frame the construction of moral artificial intelligence, proposing a system that interprets its natural, social and moral world alongside a reckoning with itself. The framework is built out of systems theory and Thomistic philosophy. The author works from Fuller Theological Seminary, which is evangelical Protestant, so this is engagement with the tradition from outside it.",
+   "tags": [
+    "moral agency",
+    "Thomism",
+    "theological anthropology",
+    "systems theory"
+   ]
+  },
+  {
+   "id": "pugeda-ai-ethical-reflections-2021",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Artificial Intelligence and Ethical Reflections from the Catholic Church",
+   "short": "Pugeda, MST Review",
+   "author": "Teofilo Giovan S. Pugeda III",
+   "publisher": "MST Review 23, no. 2",
+   "date": "2021-12-01",
+   "url": "https://archium.ateneo.edu/theology-faculty-pubs/50/",
+   "abstract": "A theology lecturer at Ateneo de Manila sets the development of artificial intelligence and the ethical problems it raises against Church teaching, then works out a theological reflection connecting the two. One of the few sustained treatments of the question written from outside Europe and North America.",
+   "tags": [
+    "Church teaching",
+    "Philippines",
+    "global south",
+    "theological reflection"
+   ]
+  },
+  {
+   "id": "geraci-apocalyptic-ai-2010",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Apocalyptic AI: Visions of Heaven in Robotics, Artificial Intelligence, and Virtual Reality",
+   "short": "Geraci, Apocalyptic AI",
+   "author": "Robert M. Geraci",
+   "publisher": "Oxford University Press",
+   "date": "2010-01-01",
+   "url": "https://academic.oup.com/book/11442",
+   "abstract": "Argues that the hopes attached to robotics and artificial intelligence, mind uploading and digital immortality among them, reproduce the structure of Jewish and Christian apocalyptic thought. The author is not Catholic and writes as a scholar of religion rather than a theologian, which is why this sits in the read-alongside layer.",
+   "tags": [
+    "apocalyptic",
+    "transhumanism",
+    "digital immortality",
+    "religious studies"
+   ]
+  },
+  {
+   "id": "singler-religion-and-ai-2025",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Religion and Artificial Intelligence: An Introduction",
+   "short": "Singler, Religion and AI",
+   "author": "Beth Singler",
+   "publisher": "Routledge",
+   "date": "2025-01-01",
+   "url": "https://www.routledge.com/Religion-and-Artificial-Intelligence-An-Introduction/Singler/p/book/9781032187648",
+   "abstract": "An anthropologist of AI and religion at the University of Zurich maps how religious and secular worldviews take up artificial intelligence, through rejection, adoption and adaptation, and how utopian and dystopian imaginaries of AI get built. Open access under CC BY-NC-ND. Not written from inside the Catholic tradition.",
+   "tags": [
+    "anthropology",
+    "religious studies",
+    "transhumanism",
+    "imaginaries"
    ]
   }
  ],
