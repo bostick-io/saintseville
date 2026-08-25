@@ -34,6 +34,19 @@
       .filter(function (w) { return w.length > 1 && !STOP[w]; });
   }
 
+  /* Strings come from i18n.js. If it has not booted yet, English is the
+     honest default rather than a blank label. */
+  function L(key, fallback) {
+    if (window.SSLang && typeof window.SSLang.t === "function") {
+      var v = window.SSLang.t(key);
+      if (v) return v;
+    }
+    return fallback || "";
+  }
+  function lang() {
+    return (window.SSLang && window.SSLang.get()) || "en";
+  }
+
   /* ---- rendering ---- */
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -55,22 +68,28 @@
      needs to know how the index is laid out. */
   function renderPassages(box, q, passages) {
     var items = passages.map(function (p) {
+      /* A passage the Holy See never published in this language is
+         labelled as such rather than quietly served in English. The
+         reader can then judge the quote for what it is. */
+      var note = (p.native === false)
+        ? '<p class="ask-passage-note">' + esc(L("lang.fallback")) + "</p>"
+        : "";
       return (
-        '<blockquote class="ask-passage">' +
+        '<blockquote class="ask-passage" lang="' + esc(p.textLang || "en") + '">' +
+        note +
         "<p>" + highlight(p.text, q) + "</p>" +
-        '<footer><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.cite) + " &middot; read the full text</a></footer>" +
+        '<footer><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.cite) + "</a></footer>" +
         "</blockquote>"
       );
     }).join("");
     box.innerHTML =
-      '<div class="ask-answer" id="ask-passages-heading"><p>Passages from the approved sources that speak to <strong>' + esc(q) + "</strong>:</p></div>" +
-      items +
-      '<p class="ask-note">Each excerpt is quoted verbatim with its official paragraph number. Follow any citation to read the complete passage at the source.</p>';
+      '<div class="ask-answer" id="ask-passages-heading"><p>' + esc(L("ask.passages")) + "</p></div>" +
+      items;
   }
 
   function renderMiss(box) {
     box.innerHTML =
-      '<div class="ask-answer"><p>The approved sources do not appear to address that question.</p></div>' +
+      '<div class="ask-answer"><p>' + esc(L("ask.none")) + "</p></div>" +
       '<p class="ask-note">Saint Seville answers only from the approved corpus: Antiqua et Nova, Magnifica Humanitas, the Compendium of the Social Doctrine, and the Rome Call for AI Ethics. Try asking about AI and human dignity, work, education, warfare, truth, or the common good. Or browse the <a href="sources/index.html">approved sources</a> directly.</p>';
   }
 
@@ -177,7 +196,7 @@
   function renderSynthesisLoading(box) {
     var d = document.createElement("div");
     d.className = "ask-synthesis ask-synthesis-loading";
-    d.innerHTML = '<p class="ask-note">Working out a fuller answer from these sources…</p>';
+    d.innerHTML = '<p class="ask-note">' + esc(L("ask.thinking")) + "</p>";
     /* The answer belongs at the top. The passages underneath are the
        evidence for it, which is a different job from being the result. */
     box.insertBefore(d, box.firstChild);
@@ -186,56 +205,60 @@
 
   function renderSynthesis(node, data) {
     if (!data || data.refused || !data.answer) { node.remove(); return; }
-    var html = '<p class="ask-cites-heading">What the sources say</p><div class="ask-answer"><p>' + esc(data.answer) + "</p></div>";
+    var html = '<p class="ask-cites-heading">' + esc(L("ask.cites")) + '</p><div class="ask-answer" lang="' +
+      esc(data.lang || "en") + '"><p>' + esc(data.answer) + "</p></div>";
     /* Always render this block. When the retrieved sources genuinely
        disagree it carries the disagreement; when they do not it explains
        what the section is for, so the capability is visible either way. */
     html += '<div class="ask-differ' + (data.differ ? "" : " ask-differ-none") + '">' +
-      "<h4>Where serious minds differ</h4><p>" +
+      "<h4>" + esc(L("ask.differ")) + "</h4><p>" +
       (data.differ
         ? esc(data.differ)
         : "The sources retrieved for this question line up with one another. When they pull in different directions, this is where the disagreement gets named, with each position attributed to whoever holds it. Seven live ones are set out in the <a href=\"thinkers/index.html#differ\">register of who is arguing about this</a>.") +
       "</p></div>";
     if (data.articles && data.articles.length) {
-      html += '<div class="ask-articles"><h4>Commentary drawn on</h4>' + data.articles.map(function (a) {
+      html += '<div class="ask-articles"><h4>' + esc(L("ask.commentary")) + "</h4>" + data.articles.map(function (a) {
         return '<p><a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.title) + "</a>, " + esc(a.author) + ", " + esc(a.publisher) + "</p>";
       }).join("") + "</div>";
     }
     if (data.next && data.next.length) {
-      html += '<div class="ask-next"><h4>Where to go from here</h4><p>' + data.next.map(esc).join(" &middot; ") + "</p></div>";
+      html += '<div class="ask-next"><h4>' + esc(L("ask.next")) + "</h4><p>" + data.next.map(esc).join(" &middot; ") + "</p></div>";
     }
     node.className = "ask-synthesis";
     node.innerHTML = html;
     /* Once an answer is on the page the passages are supporting evidence,
        so they stop announcing themselves as the result. */
     var ph = document.getElementById("ask-passages-heading");
-    if (ph) ph.innerHTML = "<p>The passages this rests on, quoted in full:</p>";
+    if (ph) ph.innerHTML = "<p>" + esc(L("ask.passages")) + "</p>";
+  }
+
+  function callAsk(q) {
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
+    return fetch("/api/ask", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ q: q, lang: lang() }),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) { clearTimeout(timer); return r.json(); })
+      .catch(function (e) { clearTimeout(timer); throw e; });
   }
 
   function askLive(q, box) {
     var node = renderSynthesisLoading(box);
-    var ctrl = window.AbortController ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : null;
-    fetch("/api/ask", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ q: q }),
-      signal: ctrl ? ctrl.signal : undefined
-    }).then(function (r) { return r.json(); })
-      .then(function (data) {
-        clearTimeout(timer);
-        if (!data || !data.ok) { node.remove(); return; }
-        renderSynthesis(node, data);
-      })
-      .catch(function () { clearTimeout(timer); node.remove(); });
+    callAsk(q).then(function (data) {
+      if (!data || !data.ok) { node.remove(); return; }
+      renderSynthesis(node, data);
+    }).catch(function () { node.remove(); });
   }
 
   /* ---- wiring ---- */
   var box, input, button;
+  var lastQ = "";
 
   function setBusy(b) {
     button.disabled = b;
-    button.textContent = b ? "Searching…" : "Ask";
+    button.textContent = b ? L("ask.thinking") : L("ask.button", "Ask");
   }
 
   /* Retrieval now happens on the server. The browser used to download
@@ -246,9 +269,36 @@
   function ask(q) {
     q = (q || "").trim();
     if (q.length < 3) return;
+    lastQ = q;
     box.hidden = false;
-    box.innerHTML = '<p class="ask-note">Searching the approved sources…</p>';
+    box.innerHTML = '<p class="ask-note">' + esc(L("ask.thinking")) + "</p>";
     setBusy(true);
+
+    /* English takes the two call path: passages land immediately from
+       /api/search, which costs nothing, and the grounded answer arrives
+       above them a moment later.
+
+       Every other language takes one call. Retrieval scores against the
+       English index, so a question in Italian has to be carried into
+       English before it touches the index, and only /api/ask can do that
+       because only /api/ask has a model. Splitting it would mean showing
+       a reader an empty result for a question that was going to be
+       answered perfectly well one second later. */
+    if (lang() !== "en") {
+      callAsk(q).then(function (data) {
+        if (!data || !data.ok) throw new Error("ask failed");
+        if (data.refused || !data.passages || !data.passages.length) {
+          renderMiss(box);
+          return;
+        }
+        renderPassages(box, q, data.passages);
+        var node = renderSynthesisLoading(box);
+        renderSynthesis(node, data);
+      }).catch(function () {
+        renderFallback(box, q);
+      }).finally(function () { setBusy(false); });
+      return;
+    }
 
     var ctrl = window.AbortController ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 12000) : null;
@@ -256,7 +306,7 @@
     fetch("/api/search", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ q: q }),
+      body: JSON.stringify({ q: q, lang: "en" }),
       signal: ctrl ? ctrl.signal : undefined
     })
       .then(function (r) { return r.json(); })
@@ -283,6 +333,14 @@
     button.addEventListener("click", function () { ask(input.value); });
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter") ask(input.value);
+    });
+
+    /* Switching language with an answer on screen re-asks the same
+       question in the new one. Leaving a stale English answer under an
+       Italian interface would be the worst of both. */
+    document.addEventListener("ss-lang", function () {
+      if (!button.disabled) setBusy(false);
+      if (lastQ) ask(lastQ);
     });
   });
 })();

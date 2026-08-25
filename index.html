@@ -16,58 +16,61 @@
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
-<body>
+<body data-i18n-full="1">
 <header class="site-header">
   <div class="brand">
     <a href="index.html" class="brand-link"><svg class="brand-mark" viewBox="17 2 30 58" fill="none" aria-hidden="true"> <circle cx="32" cy="16.5" r="13" stroke="#c9a24b" stroke-width="2.8"/> <path d="M25.4 23 h13.2 v9 a6.6 6.6 0 0 1 -13.2 0 Z" fill="#f0e2c8" stroke="#1f3a63" stroke-width="1.6" stroke-linejoin="round"/> <circle cx="29.1" cy="27.2" r="1.15" fill="#1f3a63"/> <circle cx="34.9" cy="27.2" r="1.15" fill="#1f3a63"/> <path d="M32 27.8 v2.2" stroke="#1f3a63" stroke-width="1.3" stroke-linecap="round"/> <path d="M25.4 30.5 C26.8 34.6 30.6 35.2 32 31.9 C33.4 35.2 37.2 34.6 38.6 30.5 C40 41.5 37.3 52 32 57 C26.7 52 24 41.5 25.4 30.5 Z" fill="#ffffff" stroke="#1f3a63" stroke-width="1.8" stroke-linejoin="round"/> <path d="M25.5 20.5 L27 10 L32 4 L37 10 L38.5 20.5 Z" fill="#faf7f1" stroke="#16294a" stroke-width="1.6" stroke-linejoin="round"/> <path d="M24.5 20.5 h15 v2.5 h-15 Z" fill="#b08a3e"/> <g stroke="#c9a24b" stroke-width="1.9" stroke-linecap="round"> <path d="M32 9.5v5.6M29.5 12.3h5"/> </g> </svg><span>SaintSeville<span class="brand-org">.org</span></span></a>
   </div>
-  <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="header-tools">
+    <div class="lang-switch"></div>
+    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
   <nav id="site-nav" class="site-nav" aria-label="Main">
-    <a href="index.html">Home</a>
-    <a href="briefings/index.html">Briefings</a>
-    <a href="thinkers/index.html">Thinkers</a>
-    <a href="notes/index.html">Notes</a>
-    <a href="saint/index.html">The Saint</a>
-    <a href="sources/index.html">Sources</a>
-    <a href="about/index.html">About</a>
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="briefings/index.html" data-i18n="nav.briefings">Briefings</a>
+    <a href="thinkers/index.html" data-i18n="nav.thinkers">Thinkers</a>
+    <a href="notes/index.html" data-i18n="nav.notes">Notes</a>
+    <a href="saint/index.html" data-i18n="nav.saint">The Saint</a>
+    <a href="sources/index.html" data-i18n="nav.sources">Sources</a>
+    <a href="about/index.html" data-i18n="nav.about">About</a>
   </nav>
 </header>
 
 <main>
   <section class="hero">
     <div class="hero-inner">
-      <p class="eyebrow">Ethics and Thought for the AI Age</p>
+      <p class="eyebrow" data-i18n="hero.eyebrow">Ethics and Thought for the AI Age</p>
       <h1>Saint Seville</h1>
-      <p class="mission">Engineering can tell us what AI does. What it means for human beings is a different kind of question. Saint Seville catalogues the serious thinking in the space where engineering ends and ethics takes over.</p>
-      <p class="promise">Rooted in the Catholic intellectual tradition and its two thousand years of reflection on what a human being is. Every answer cites the approved source it came from. No open web, only the sources on our list.</p>
+      <p class="mission" data-i18n="hero.mission">Engineering can tell us what AI does. What it means for human beings is a different kind of question. Saint Seville catalogues the serious thinking in the space where engineering ends and ethics takes over.</p>
+      <p class="promise" data-i18n="hero.promise">Rooted in the Catholic intellectual tradition and its two thousand years of reflection on what a human being is. Every answer cites the approved source it came from. No open web, only the sources on our list.</p>
     </div>
   </section>
 
   <section class="search-section">
     <div class="search-card">
-      <label for="seville-search" class="search-label">Ask Saint Seville</label>
+      <label for="seville-search" class="search-label" data-i18n="ask.label">Ask Saint Seville</label>
       <div class="search-row">
-        <input id="seville-search" type="text" placeholder="Ask about AI, work, dignity, education…" autocomplete="off">
-        <button type="button" class="search-button">Ask</button>
+        <input id="seville-search" type="text" placeholder="Ask about AI, work, dignity, education…" data-i18n-placeholder="ask.placeholder" autocomplete="off">
+        <button type="button" class="search-button" data-i18n="ask.button">Ask</button>
       </div>
-      <p class="search-note">Every answer names and links the approved source behind it. If a claim is not in an approved source, Saint Seville does not make it. <a class="adv-link" href="search/index.html">Advanced search: choose exactly which sources are in scope&nbsp;&rarr;</a></p>
+      <p class="search-note"><span data-i18n="ask.note">Every answer names and links the approved source behind it. If a claim is not in an approved source, Saint Seville does not make it.</span> <a class="adv-link" href="search/index.html"><span data-i18n="ask.adv">Advanced search: choose exactly which sources are in scope</span>&nbsp;&rarr;</a></p>
       <div id="ask-results" class="ask-results" hidden></div>
     </div>
   </section>
 
   <section class="pillars">
     <div class="pillar">
-      <h2>Cite the source</h2>
-      <p>Nothing is offered without attribution. Each answer carries the document and link it rests on, so anyone can read the original for themselves.</p>
+      <h2 data-i18n="pillar1.h">Cite the source</h2>
+      <p data-i18n="pillar1.p">Nothing is offered without attribution. Each answer carries the document and link it rests on, so anyone can read the original for themselves.</p>
     </div>
     <div class="pillar">
-      <h2>Approved sources only</h2>
+      <h2 data-i18n="pillar2.h">Approved sources only</h2>
       <p>The corpus is a reviewed set of Vatican primary texts and official Church documents on artificial intelligence, alongside clearly labeled commentary we index and link. The <a href="search/index.html">advanced search</a> puts every source in your hands: rule any of them in or out before you ask.</p>
     </div>
     <div class="pillar">
-      <h2>Ordered for clarity</h2>
+      <h2 data-i18n="pillar3.h">Ordered for clarity</h2>
       <p>Named for Isidore of Seville, the great encyclopedist venerated as patron of the internet. In his spirit, the aim is a calm, well arranged path from your question to the tradition's own words, with <a href="briefings/index.html">briefings</a> that map where the argument stands.</p>
     </div>
   </section>
@@ -75,11 +78,12 @@
 
 <footer class="site-footer">
   <p class="footer-brand-row"><span class="footer-brand"><svg class="brand-mark" viewBox="17 2 30 58" fill="none" aria-hidden="true"> <circle cx="32" cy="16.5" r="13" stroke="#c9a24b" stroke-width="2.8"/> <path d="M25.4 23 h13.2 v9 a6.6 6.6 0 0 1 -13.2 0 Z" fill="#f0e2c8" stroke="#1f3a63" stroke-width="1.6" stroke-linejoin="round"/> <circle cx="29.1" cy="27.2" r="1.15" fill="#1f3a63"/> <circle cx="34.9" cy="27.2" r="1.15" fill="#1f3a63"/> <path d="M32 27.8 v2.2" stroke="#1f3a63" stroke-width="1.3" stroke-linecap="round"/> <path d="M25.4 30.5 C26.8 34.6 30.6 35.2 32 31.9 C33.4 35.2 37.2 34.6 38.6 30.5 C40 41.5 37.3 52 32 57 C26.7 52 24 41.5 25.4 30.5 Z" fill="#ffffff" stroke="#1f3a63" stroke-width="1.8" stroke-linejoin="round"/> <path d="M25.5 20.5 L27 10 L32 4 L37 10 L38.5 20.5 Z" fill="#faf7f1" stroke="#16294a" stroke-width="1.6" stroke-linejoin="round"/> <path d="M24.5 20.5 h15 v2.5 h-15 Z" fill="#b08a3e"/> <g stroke="#c9a24b" stroke-width="1.9" stroke-linecap="round"> <path d="M32 9.5v5.6M29.5 12.3h5"/> </g> </svg><span>SaintSeville<span class="brand-org">.org</span></span></span></p>
-  <p class="footer-note">An approved sources only project. Answers cite their source.</p>
+  <p class="footer-note" data-i18n="foot.note">An approved sources only project. Answers cite their source.</p>
   <p class="footer-note">Excerpts from Vatican documents &copy; Libreria Editrice Vaticana, quoted briefly with attribution. Full texts at <a href="https://www.vatican.va" target="_blank" rel="noopener">vatican.va</a>.</p>
 </footer>
 
 <script src="menu.js"></script>
-<script src="ask.js?v=6"></script>
+<script src="i18n.js?v=1"></script>
+<script src="ask.js?v=7"></script>
 </body>
 </html>
