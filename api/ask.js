@@ -1,130 +1,38 @@
 /* Saint Seville — Live Ask backend (Vercel serverless function).
 
-   Retrieval stays identical to the client-side engine in ask.js: BM25
-   over index.json for the approved corpus, plus a plain term-overlap
-   match over the article abstracts in sources.json. Nothing here ever
-   calls out to the open web. The model only ever sees the passages and
-   abstracts retrieved below and is instructed to use nothing else.
+   Retrieval is not implemented here. It lives in ./_engine, which
+   /api/search runs too, so the passages behind an answer are always
+   the same passages the reader can see listed underneath it.
 
-   Protection, per the "simple, no new accounts" choice: a same-origin
-   check, a best-effort in-memory rate limit (per warm instance, not
-   durable across cold starts or regions — a soft first line, not the
+   Nothing here calls out to the open web. The model only ever sees the
+   passages and abstracts retrieved from the approved corpus and is
+   instructed to use nothing else.
+
+   Protection: a same-origin check, a best-effort in-memory rate limit
+   (per warm instance, not durable — a soft first line, not the
    backstop), and a short question length cap. The real budget backstop
-   is the spend limit set on the Anthropic API key itself in the
-   Anthropic Console, which is outside this code by design. */
+   is the spend limit on the Anthropic API key itself, which is outside
+   this code by design. */
 
 "use strict";
 
-var registry = require("../sources.json");
-var idx = require("../index.json");
+var E = require("./_engine");
+var registry = E.registry;
+var idx = E.idx;
+var tokens = E.tokens;
+var searchCorpus = function (q) { return E.searchCorpus(q); };
+var searchArticles = function (q, n) { return E.searchArticles(q, n); };
 
 var MODEL = "claude-haiku-4-5";
 var MAX_Q_LEN = 300;
-var TOP_N_CORPUS = 6;
-var TOP_N_ARTICLES = 3;
-var SCORE_FLOOR = 3.0;
+var TOP_N_CORPUS = E.TOP_N_CORPUS;
+var TOP_N_ARTICLES = E.TOP_N_ARTICLES;
+var ALLOWED_ORIGINS = E.ALLOWED_ORIGINS;
 
-var ALLOWED_ORIGINS = {
-  "https://www.saintseville.org": 1,
-  "https://saintseville.org": 1
-};
-
-var STOP = {};
-("a an and are as at be but by for from has have how i in is it its of on or " +
- "so that the their there these this to was we what when where which who why " +
- "will with about does do did can could should would may might must not no if")
-  .split(" ").forEach(function (w) { STOP[w] = 1; });
-
-function tokens(s) {
-  return String(s).toLowerCase().replace(/[’']/g, "")
-    .split(/[^a-z0-9]+/)
-    .filter(function (w) { return w.length > 1 && !STOP[w]; });
-}
-
-/* ---- BM25 over the prebuilt corpus index, same algorithm as ask.js ---- */
-function searchCorpus(q) {
-  var qts = tokens(q);
-  if (!qts.length) return [];
-  var seen = Object.create(null);
-  qts = qts.filter(function (t) { if (seen[t]) return false; seen[t] = 1; return true; });
-  var N = idx.meta.length;
-
-  var unknown = qts.filter(function (t) { return !idx.terms[t]; });
-  if (unknown.length * 2 > qts.length) return [];
-
-  var informative = qts.filter(function (t) {
-    return idx.terms[t] && idx.terms[t].length / 2 < N * 0.25;
-  });
-  var isInformative = Object.create(null);
-  informative.forEach(function (t) { isInformative[t] = 1; });
-
-  var scores = Object.create(null);
-  var covered = Object.create(null);
-  var k1 = 1.4, b = 0.6;
-  qts.forEach(function (t) {
-    var post = idx.terms[t];
-    if (!post) return;
-    var df = post.length / 2;
-    var idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
-    for (var j = 0; j < post.length; j += 2) {
-      var i = post[j], tf = post[j + 1];
-      var norm = tf * (k1 + 1) / (tf + k1 * (1 - b + b * idx.lengths[i] / idx.avgLen));
-      scores[i] = (scores[i] || 0) + idf * norm;
-      if (isInformative[t]) covered[i] = (covered[i] || 0) + 1;
-    }
-  });
-
-  var need = Math.min(3, Math.ceil(informative.length / 2));
-  var hits = Object.keys(scores).filter(function (i) {
-    return (covered[i] || 0) >= need;
-  }).map(function (i) { return { i: +i, score: scores[i] }; });
-  hits.sort(function (a, c) { return c.score - a.score; });
-  return hits.slice(0, TOP_N_CORPUS).filter(function (h) { return h.score >= SCORE_FLOOR; });
-}
-
-/* ---- plain term-overlap match over indexed commentary abstracts ---- */
-function searchArticles(q, limit) {
-  var qts = tokens(q);
-  if (!qts.length) return [];
-  var arts = (registry.sources || []).filter(function (s) { return s.kind === "article"; });
-  var scored = arts.map(function (a) {
-    var hay = tokens((a.title || "") + " " + (a.abstract || "") + " " + (a.tags || []).join(" "));
-    var hset = Object.create(null);
-    hay.forEach(function (w) { hset[w] = 1; });
-    var score = 0;
-    qts.forEach(function (t) { if (hset[t]) score++; });
-    return { a: a, score: score };
-  }).filter(function (x) { return x.score > 0; });
-  scored.sort(function (x, y) { return y.score - x.score; });
-  return scored.slice(0, limit).map(function (x) { return x.a; });
-}
-
-/* ---- best-effort in-memory rate limit, lives for one warm instance ---- */
-var minuteBuckets = new Map();
-var dayBuckets = new Map();
-var MINUTE_MS = 60 * 1000;
-var MAX_PER_MINUTE = 8;
-var MAX_PER_DAY = 60;
-
-function rateLimited(ip) {
-  var now = Date.now();
-  var mb = minuteBuckets.get(ip);
-  if (!mb || now > mb.reset) { mb = { count: 0, reset: now + MINUTE_MS }; minuteBuckets.set(ip, mb); }
-  mb.count++;
-  if (mb.count > MAX_PER_MINUTE) return true;
-
-  var dayKey = ip + ":" + new Date().toISOString().slice(0, 10);
-  var d = (dayBuckets.get(dayKey) || 0) + 1;
-  dayBuckets.set(dayKey, d);
-  if (d > MAX_PER_DAY) return true;
-  return false;
-}
-
-function clientIp(req) {
-  var xf = req.headers["x-forwarded-for"];
-  if (xf) return String(xf).split(",")[0].trim();
-  return (req.socket && req.socket.remoteAddress) || "unknown";
-}
+/* Rate limit and client IP come from the shared engine. */
+var limited = E.makeLimiter(8, 60);
+function rateLimited(ip) { return limited(ip); }
+function clientIp(req) { return E.clientIp(req); }
 
 var SYSTEM_PROMPT =
   "You are the answer engine for SaintSeville.org, a site that catalogues serious " +
@@ -209,12 +117,12 @@ module.exports = async function handler(req, res) {
   }).join("\n");
 
   var articleLines = articles.map(function (a, n) {
-    return "[" + String.fromCharCode(65 + n) + "] \"" + a.title + "\" — " + a.author + ", " +
+    return "[" + String.fromCharCode(65 + n) + "] \"" + a.title + "\", " + a.author + ", " +
       a.publisher + ", " + String(a.date).slice(0, 4) + ". " + a.url + "\nAbstract: " + a.abstract;
   }).join("\n\n");
 
   var userMsg =
-    "CORPUS PASSAGES (quote verbatim, cite exactly as shown — these are the Church's own words):\n" +
+    "CORPUS PASSAGES (quote verbatim, cite exactly as shown, these are the Church's own words):\n" +
     (passageLines || "(none retrieved)") +
     "\n\nCOMMENTARY (describe only in your own words, never quote as Church teaching, always attribute):\n" +
     (articleLines || "(none retrieved)") +
