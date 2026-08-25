@@ -973,3 +973,15 @@ mark.reg-hit { background: rgba(201,162,75,.38); color: inherit; border-radius: 
   .reg-chip-copy { margin-left: 0; }
   .entry-permalink { opacity: 1; color: var(--stone-line); }
 }
+
+/* The Notes page borrows the register's permalink, for the same reason:
+   a bylined piece that cannot be linked to on its own is hard to send,
+   and sending it is the point. */
+.notes-page .entry-card h3 { display: flex; align-items: baseline; }
+
+.about-latest {
+  margin-top: 0.6rem;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
