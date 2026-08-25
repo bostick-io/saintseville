@@ -123,12 +123,12 @@
       return (
         '<blockquote class="ask-passage">' +
         "<p>" + highlight(idx.excerpts[h.i], q) + "</p>" +
-        '<footer><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(cite) + " — read the full text</a></footer>" +
+        '<footer><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(cite) + " &middot; read the full text</a></footer>" +
         "</blockquote>"
       );
     }).join("");
     box.innerHTML =
-      '<div class="ask-answer"><p>Passages from the approved sources that speak to <strong>' + esc(q) + "</strong>:</p></div>" +
+      '<div class="ask-answer" id="ask-passages-heading"><p>Passages from the approved sources that speak to <strong>' + esc(q) + "</strong>:</p></div>" +
       items +
       '<p class="ask-note">Each excerpt is quoted verbatim with its official paragraph number. Follow any citation to read the complete passage at the source.</p>';
   }
@@ -136,7 +136,7 @@
   function renderMiss(box) {
     box.innerHTML =
       '<div class="ask-answer"><p>The approved sources do not appear to address that question.</p></div>' +
-      '<p class="ask-note">Saint Seville answers only from the approved corpus: Antiqua et Nova, Magnifica Humanitas, the Compendium of the Social Doctrine, and the Rome Call for AI Ethics. Try asking about AI and human dignity, work, education, warfare, truth, or the common good — or browse the <a href="sources/index.html">approved sources</a> directly.</p>';
+      '<p class="ask-note">Saint Seville answers only from the approved corpus: Antiqua et Nova, Magnifica Humanitas, the Compendium of the Social Doctrine, and the Rome Call for AI Ethics. Try asking about AI and human dignity, work, education, warfare, truth, or the common good. Or browse the <a href="sources/index.html">approved sources</a> directly.</p>';
   }
 
   /* Curated last-resort fallback if index.json cannot load. */
@@ -243,13 +243,15 @@
     var d = document.createElement("div");
     d.className = "ask-synthesis ask-synthesis-loading";
     d.innerHTML = '<p class="ask-note">Working out a fuller answer from these sources…</p>';
-    box.appendChild(d);
+    /* The answer belongs at the top. The passages underneath are the
+       evidence for it, which is a different job from being the result. */
+    box.insertBefore(d, box.firstChild);
     return d;
   }
 
   function renderSynthesis(node, data) {
     if (!data || data.refused || !data.answer) { node.remove(); return; }
-    var html = '<p class="ask-cites-heading">A fuller answer</p><div class="ask-answer"><p>' + esc(data.answer) + "</p></div>";
+    var html = '<p class="ask-cites-heading">What the sources say</p><div class="ask-answer"><p>' + esc(data.answer) + "</p></div>";
     /* Always render this block. When the retrieved sources genuinely
        disagree it carries the disagreement; when they do not it explains
        what the section is for, so the capability is visible either way. */
@@ -261,7 +263,7 @@
       "</p></div>";
     if (data.articles && data.articles.length) {
       html += '<div class="ask-articles"><h4>Commentary drawn on</h4>' + data.articles.map(function (a) {
-        return '<p><a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.title) + "</a> &mdash; " + esc(a.author) + ", " + esc(a.publisher) + "</p>";
+        return '<p><a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.title) + "</a>, " + esc(a.author) + ", " + esc(a.publisher) + "</p>";
       }).join("") + "</div>";
     }
     if (data.next && data.next.length) {
@@ -269,6 +271,10 @@
     }
     node.className = "ask-synthesis";
     node.innerHTML = html;
+    /* Once an answer is on the page the passages are supporting evidence,
+       so they stop announcing themselves as the result. */
+    var ph = document.getElementById("ask-passages-heading");
+    if (ph) ph.innerHTML = "<p>The passages this rests on, quoted in full:</p>";
   }
 
   function askLive(q, box) {
