@@ -1,23 +1,24 @@
-/* Saint Seville — Ask box.
-   Retrieval-only search over the full approved corpus, running entirely
-   in the browser. index.json is exported from the RAG database and holds
-   a term-frequency index over all 958 numbered passages of the four
-   approved documents, plus a short attributed excerpt of each passage
-   for display. Full texts are never served here; every citation links
-   to the official text at vatican.va (or romecall.org).
+/* Saint Seville, Ask box.
 
-   Nothing is generated. Every result is a real excerpt with its official
-   paragraph citation. If nothing in the corpus scores above the relevance
-   floor, Saint Seville says so instead of stretching.
+   Retrieval runs on the server now, in /api/_engine, shared with the
+   advanced search page so the two can never disagree about what the
+   corpus says. The browser used to download the whole term index before
+   it could answer anything, which was 932KB at four documents and does
+   not survive a corpus meant to grow into the thirties.
 
-   The curated FALLBACK set below is kept only for the case where
-   index.json itself fails to load. */
+   Two calls. /api/search returns cited passages and is fast and free.
+   /api/ask returns a grounded answer built only from those same
+   passages, and lands above them once it arrives.
+
+   Nothing is generated without a source. Every citation links to the
+   official text at vatican.va or romecall.org. If nothing in the corpus
+   clears the relevance floor, Saint Seville says so instead of
+   stretching.
+
+   The curated FALLBACK set below is kept only for the case where the
+   API itself is unreachable. */
 (function () {
   "use strict";
-
-  var INDEX_URL = "index.json";
-  var TOP_N = 6;
-  var SCORE_FLOOR = 3.0; /* below this bm25 score, refuse */
 
   var STOP = {};
   ("a an and are as at be but by for from has have how i in is it its of on or " +
@@ -25,77 +26,12 @@
    "will with about does do did can could should would may might must not no if")
     .split(" ").forEach(function (w) { STOP[w] = 1; });
 
+  /* Only used to decide what to highlight in a passage. Scoring lives
+     on the server now. */
   function tokens(s) {
     return String(s).toLowerCase().replace(/[’']/g, "")
       .split(/[^a-z0-9]+/)
       .filter(function (w) { return w.length > 1 && !STOP[w]; });
-  }
-
-  /* ---- prebuilt index, fetched lazily ---- */
-  var idx = null;         /* {docs, meta, excerpts, lengths, avgLen, terms} */
-  var loadPromise = null;
-
-  function loadIndex() {
-    if (loadPromise) return loadPromise;
-    loadPromise = fetch(INDEX_URL)
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(function (data) { idx = data; return true; });
-    return loadPromise;
-  }
-
-  /* BM25 scoring over the prebuilt term index. */
-  function search(q) {
-    var qts = tokens(q);
-    if (!qts.length) return [];
-    var seen = Object.create(null);
-    qts = qts.filter(function (t) {
-      if (seen[t]) return false; seen[t] = 1; return true;
-    });
-    var N = idx.meta.length;
-
-    /* Refuse outright when the question is mostly about things the
-       corpus has no words for at all — better silence than stretch. */
-    var unknown = qts.filter(function (t) { return !idx.terms[t]; });
-    if (unknown.length * 2 > qts.length) return [];
-
-    /* Terms that appear in under a quarter of passages carry real
-       signal here; ubiquitous words (church, human, ai, ...) score
-       but do not count toward the coverage requirement. */
-    var informative = qts.filter(function (t) {
-      return idx.terms[t] && idx.terms[t].length / 2 < N * 0.25;
-    });
-    var isInformative = Object.create(null);
-    informative.forEach(function (t) { isInformative[t] = 1; });
-
-    var scores = Object.create(null);
-    var covered = Object.create(null); /* distinct informative terms present */
-    var k1 = 1.4, b = 0.6;
-    qts.forEach(function (t) {
-      var post = idx.terms[t];
-      if (!post) return;
-      var df = post.length / 2;
-      var idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
-      for (var j = 0; j < post.length; j += 2) {
-        var i = post[j], tf = post[j + 1];
-        var norm = tf * (k1 + 1) / (tf + k1 * (1 - b + b * idx.lengths[i] / idx.avgLen));
-        scores[i] = (scores[i] || 0) + idf * norm;
-        if (isInformative[t]) covered[i] = (covered[i] || 0) + 1;
-      }
-    });
-
-    /* A passage must contain at least half the informative terms
-       (capped at 3) as well as clear the score floor. */
-    var need = Math.min(3, Math.ceil(informative.length / 2));
-    var hits = Object.keys(scores).filter(function (i) {
-      return (covered[i] || 0) >= need;
-    }).map(function (i) {
-      return { i: +i, score: scores[i] };
-    });
-    hits.sort(function (a, b2) { return b2.score - a.score; });
-    return hits.slice(0, TOP_N).filter(function (h) { return h.score >= SCORE_FLOOR; });
   }
 
   /* ---- rendering ---- */
@@ -115,15 +51,14 @@
     return out;
   }
 
-  function renderHits(box, q, hits) {
-    var items = hits.map(function (h) {
-      var m = idx.meta[h.i];
-      var d = idx.docs[m[0]];
-      var cite = d.cite + " §" + m[1];
+  /* The server hands back {cite, url, text} directly, so nothing here
+     needs to know how the index is laid out. */
+  function renderPassages(box, q, passages) {
+    var items = passages.map(function (p) {
       return (
         '<blockquote class="ask-passage">' +
-        "<p>" + highlight(idx.excerpts[h.i], q) + "</p>" +
-        '<footer><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(cite) + " &middot; read the full text</a></footer>" +
+        "<p>" + highlight(p.text, q) + "</p>" +
+        '<footer><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.cite) + " &middot; read the full text</a></footer>" +
         "</blockquote>"
       );
     }).join("");
@@ -259,7 +194,7 @@
       "<h4>Where serious minds differ</h4><p>" +
       (data.differ
         ? esc(data.differ)
-        : "The sources retrieved for this question line up with one another. When they pull in different directions, this is where the disagreement gets named, with each position attributed to whoever holds it.") +
+        : "The sources retrieved for this question line up with one another. When they pull in different directions, this is where the disagreement gets named, with each position attributed to whoever holds it. Seven live ones are set out in the <a href=\"thinkers/index.html#differ\">register of who is arguing about this</a>.") +
       "</p></div>";
     if (data.articles && data.articles.length) {
       html += '<div class="ask-articles"><h4>Commentary drawn on</h4>' + data.articles.map(function (a) {
@@ -303,22 +238,42 @@
     button.textContent = b ? "Searching…" : "Ask";
   }
 
+  /* Retrieval now happens on the server. The browser used to download
+     the whole index before it could answer anything, which was 932KB at
+     four documents and does not survive a corpus in the thirties. Two
+     calls: passages first because they are fast and cost nothing, then
+     the grounded answer, which lands above them. */
   function ask(q) {
     q = (q || "").trim();
     if (q.length < 3) return;
     box.hidden = false;
     box.innerHTML = '<p class="ask-note">Searching the approved sources…</p>';
     setBusy(true);
-    loadIndex()
-      .then(function () {
-        var hits = search(q);
-        if (hits.length) renderHits(box, q, hits);
-        else renderMiss(box);
+
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 12000) : null;
+
+    fetch("/api/search", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ q: q }),
+      signal: ctrl ? ctrl.signal : undefined
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        clearTimeout(timer);
+        if (!data || !data.ok) throw new Error("search failed");
+        if (data.passages && data.passages.length) renderPassages(box, q, data.passages);
+        else { renderMiss(box); setBusy(false); return; }
         askLive(q, box);
       })
-      .catch(function () { renderFallback(box, q); })
+      .catch(function () {
+        clearTimeout(timer);
+        renderFallback(box, q);
+      })
       .finally(function () { setBusy(false); });
   }
+
 
   document.addEventListener("DOMContentLoaded", function () {
     input = document.getElementById("seville-search");
@@ -329,11 +284,5 @@
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter") ask(input.value);
     });
-    /* Warm the index in the background so the first search is instant. */
-    if (window.requestIdleCallback) {
-      requestIdleCallback(function () { loadIndex().catch(function () {}); });
-    } else {
-      setTimeout(function () { loadIndex().catch(function () {}); }, 1500);
-    }
   });
 })();
