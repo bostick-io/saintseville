@@ -686,3 +686,34 @@ a { color: var(--deep-blue); }
   color: var(--deep-blue);
   margin-bottom: 0.1rem;
 }
+
+/* ---- Suggestion form -------------------------------------------------- */
+.suggest-form { max-width: 40rem; margin-top: 1.4rem; }
+.sf-label {
+  display: block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--deep-blue);
+  margin: 1.1rem 0 0.35rem;
+}
+.sf-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.98rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--stone-line);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--ink);
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.sf-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, .22);
+}
+textarea.sf-input { resize: vertical; line-height: 1.5; }
+.sf-submit { margin-top: 1.3rem; }
+@media (prefers-reduced-motion: reduce) { .sf-input { transition: none; } }
