@@ -105,13 +105,23 @@ function decode(s) {
 /* Footnote markers live in <sup> and would otherwise land mid sentence
    as stray digits. Everything else becomes a space, then collapses. */
 function strip(html) {
-  return decode(
+  var t = decode(
     String(html)
       .replace(/<sup[\s\S]*?<\/sup>/gi, " ")
       .replace(/<script[\s\S]*?<\/script>/gi, " ")
       .replace(/<style[\s\S]*?<\/style>/gi, " ")
       .replace(/<[^>]+>/g, " ")
   ).replace(/\s+/g, " ").trim();
+
+  /* Turning every tag into a space leaves gaps that were never in the
+     printed text: an incipit set in italics comes out as "[ Antiqua et
+     nova ]". Close them up, otherwise the quotation is not quite the
+     quotation. */
+  return t
+    .replace(/([(\[«“‘])\s+/g, "$1")
+    .replace(/\s+([)\]»”’.,;:!?])/g, "$1")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 /* Antiqua et Nova and Magnifica Humanitas number their paragraphs inside
