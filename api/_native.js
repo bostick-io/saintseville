@@ -117,6 +117,12 @@ function strip(html) {
      printed text: an incipit set in italics comes out as "[ Antiqua et
      nova ]". Close them up, otherwise the quotation is not quite the
      quotation. */
+  /* Footnote markers on the Italian and French pages are bracketed
+     numbers in the flow of the text rather than <sup>, so they survive
+     the tag strip and land inside the quotation as "[125]". They are
+     apparatus, not the Holy See's sentence. */
+  t = t.replace(/\s*\[\s*\d{1,4}\s*\]/g, "");
+
   return t
     .replace(/([(\[«“‘])\s+/g, "$1")
     .replace(/\s+([)\]»”’.,;:!?])/g, "$1")
