@@ -30,12 +30,14 @@
    "will with about does do did can could should would may might must not no if " +
    "che chi cosa come dice dice dei del della delle dello degli con per non " +
    "una uno gli lei loro nel nella sono essere piu quando dove perche " +
+   "sul sulla sulle sui dal dalla dalle dai alla alle agli nei negli nelle " +
    "que quien como dice los las del las una uno por para con sus sea ser mas " +
    "cuando donde porque sobre este esta estos entre " +
    "qui quoi comme dit les des dans une pour avec sont etre plus quand " +
-   "ou pourquoi sur cette ces leur leurs " +
+   "ou pourquoi sur cette ces leur leurs aux sobre " +
    "was wie sagt der die das den dem des ein eine einen fur mit sind sein mehr " +
-   "wenn wo warum uber diese dieser ihre ihren nicht auch noch")
+   "wenn wo warum uber diese dieser ihre ihren nicht auch noch " +
+   "aus vom zum zur beim vor nach bei auf")
     .split(" ").forEach(function (w) { STOP[w] = 1; });
 
   /* Only used to decide what to highlight in a passage. Scoring lives
