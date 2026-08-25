@@ -270,6 +270,63 @@
     "personhood",
     "AGI"
    ]
+  },
+  {
+   "id": "oviedo-ai-and-theology-2022",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Artificial Intelligence and Theology: Looking for a Positive but Not Uncritical Reception",
+   "short": "Oviedo, Zygon",
+   "author": "Lluís Oviedo, OFM",
+   "publisher": "Zygon: Journal of Religion and Science 57, no. 4",
+   "date": "2022-12-02",
+   "url": "https://doi.org/10.1111/zygo.12832",
+   "abstract": "A Franciscan theologian at the Pontifical University Antonianum in Rome argues that theology has more to offer artificial intelligence than ethics review. Theologians have already moved into the anthropological consequences of the technology, and he presses for a transdisciplinary conversation in which a committed theological voice helps shape outcomes rather than assessing them afterwards.",
+   "tags": [
+    "theological anthropology",
+    "religion and science",
+    "Rome",
+    "Franciscan",
+    "reception"
+   ]
+  },
+  {
+   "id": "furse-theology-of-robots-1986",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "The Theology of Robots",
+   "short": "Furse, New Blackfriars",
+   "author": "Edmund Furse",
+   "publisher": "New Blackfriars 67, no. 795",
+   "date": "1986-09-01",
+   "url": "https://www.jstor.org/stable/43247924",
+   "abstract": "An AI researcher writing in the English Dominican journal in 1986, arguing against the assumption that a theology of robots is nonsensical. Notable less for being early than for its author: a working computer scientist rather than a theologian, framing the question as a constructive theological account of machine persons. It drew a published reply in the same journal four months later.",
+   "tags": [
+    "robots",
+    "history",
+    "Dominican",
+    "personhood",
+    "1986"
+   ]
+  },
+  {
+   "id": "jaki-brain-mind-computers-1969",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Brain, Mind and Computers",
+   "short": "Jaki, Brain Mind and Computers",
+   "author": "Stanley L. Jaki, OSB",
+   "publisher": "Herder and Herder",
+   "date": "1969-01-01",
+   "url": "https://www.pas.va/en/academicians/deceased/jaki.html",
+   "abstract": "A Benedictine priest, physicist and member of the Pontifical Academy of Sciences making a book-length Catholic case in 1969 against the claim that computers can think. The earliest sustained Catholic treatment of machine intelligence we have located, and useful evidence against the idea that the Church came to this question recently. It won the Lecomte du Noüy Prize in 1970.",
+   "tags": [
+    "history",
+    "machine thinking",
+    "Benedictine",
+    "Pontifical Academy of Sciences",
+    "1969"
+   ]
   }
  ],
  "watchlist": [
