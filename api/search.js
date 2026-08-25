@@ -11,8 +11,10 @@
 "use strict";
 
 var E = require("./_engine");
+var N = require("./_native");
 
 var MAX_Q_LEN = 300;
+var LANGS = { en: 1, it: 1, es: 1, fr: 1, de: 1 };
 var limited = E.makeLimiter(40, 600);
 
 module.exports = async function handler(req, res) {
@@ -50,13 +52,28 @@ module.exports = async function handler(req, res) {
   var articleIds = Array.isArray(body.articleIds) ? body.articleIds.map(String) : null;
   var limit = Math.min(Math.max(parseInt(body.limit, 10) || E.TOP_N_CORPUS, 1), 12);
 
+  var lang = String(body.lang || "en").toLowerCase();
+  if (!LANGS[lang]) lang = "en";
+
   var hits = E.searchCorpus(q, { docs: docs, limit: limit });
   var arts = E.searchArticles(q, 6, articleIds);
+
+  /* Retrieval scores against the English index either way. What changes
+     with lang is which edition of the winning paragraph gets shown, so a
+     reader sees the Holy See's own Italian rather than a translation of
+     a translation. Unlike /api/ask there is no model here to carry a
+     non-English query across first, so an Italian query typed into the
+     advanced search still matches on names and shared roots only. */
+  var passages = E.shapePassages(hits);
+  try {
+    passages = await N.localize(passages, lang);
+  } catch (e) { /* fall through with the English text */ }
 
   res.status(200).json({
     ok: true,
     q: q,
-    passages: E.shapePassages(hits),
+    lang: lang,
+    passages: passages,
     articles: E.shapeArticles(arts)
   });
 };

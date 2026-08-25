@@ -4,12 +4,21 @@
    /api/search runs too, so the passages behind an answer are always
    the same passages the reader can see listed underneath it.
 
-   Nothing here calls out to the open web. The model only ever sees the
-   passages and abstracts retrieved from the approved corpus and is
-   instructed to use nothing else.
+   Nothing here calls out to the open web for evidence. The model only
+   ever sees passages and abstracts retrieved from the approved corpus
+   and is instructed to use nothing else. The one outbound fetch is to
+   vatican.va, in ./_native, to pull the Holy See's own published text
+   of a paragraph we already selected, in the reader's language.
+
+   Language handling, in order: the question is translated into English
+   if it arrives in something else, because the index and its vocabulary
+   bridge are English and one well tuned index beats five poorly tuned
+   ones. Retrieval then runs once. The winning paragraphs are looked up
+   in the target language text. The answer is written in the reader's
+   language, quoting those native paragraphs.
 
    Protection: a same-origin check, a best-effort in-memory rate limit
-   (per warm instance, not durable — a soft first line, not the
+   (per warm instance, not durable, a soft first line rather than the
    backstop), and a short question length cap. The real budget backstop
    is the spend limit on the Anthropic API key itself, which is outside
    this code by design. */
@@ -17,11 +26,9 @@
 "use strict";
 
 var E = require("./_engine");
+var N = require("./_native");
 var registry = E.registry;
 var idx = E.idx;
-var tokens = E.tokens;
-var searchCorpus = function (q) { return E.searchCorpus(q); };
-var searchArticles = function (q, n) { return E.searchArticles(q, n); };
 
 var MODEL = "claude-haiku-4-5";
 var MAX_Q_LEN = 300;
@@ -29,10 +36,9 @@ var TOP_N_CORPUS = E.TOP_N_CORPUS;
 var TOP_N_ARTICLES = E.TOP_N_ARTICLES;
 var ALLOWED_ORIGINS = E.ALLOWED_ORIGINS;
 
-/* Rate limit and client IP come from the shared engine. */
+var LANGS = { en: "English", it: "Italian", es: "Spanish", fr: "French", de: "German" };
+
 var limited = E.makeLimiter(8, 60);
-function rateLimited(ip) { return limited(ip); }
-function clientIp(req) { return E.clientIp(req); }
 
 var SYSTEM_PROMPT =
   "You are the answer engine for SaintSeville.org, a site that catalogues serious " +
@@ -56,6 +62,65 @@ var SYSTEM_PROMPT =
   "each naming one source given above by its short title, worth reading next; use an empty " +
   "array if nothing fits.";
 
+function langClause(lang) {
+  if (!lang || lang === "en") return "";
+  var name = LANGS[lang] || "English";
+  return " Write every value in the JSON object in " + name + ". The corpus passages you " +
+    "are given are already the Holy See's own published " + name + " text where one exists, " +
+    "so quote them exactly as given and do not translate a quotation yourself. A passage " +
+    "marked (English text, no " + name + " edition published) must be paraphrased in " +
+    name + " rather than quoted, and you should say that the original is in English. " +
+    "Document titles and paragraph citations stay exactly as given.";
+}
+
+function noDashes(x) {
+  return String(x || "")
+    .replace(/\s*[—–]\s*/g, ", ")
+    .replace(/,\s*,/g, ",")
+    .replace(/\s+,/g, ",")
+    .replace(/,\s*([.!?;:])/g, "$1");
+}
+
+async function callModel(system, user, maxTokens) {
+  var upstream = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": process.env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01"
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: maxTokens,
+      system: system,
+      messages: [{ role: "user", content: user }]
+    })
+  });
+  if (!upstream.ok) throw new Error("upstream " + upstream.status);
+  var data = await upstream.json();
+  return (data.content && data.content[0] && data.content[0].text) || "";
+}
+
+/* Retrieval is English. A question in another language is carried across
+   before it reaches the index, not after, so the reader's own words are
+   never the thing that fails to match. If the translation call falls
+   over, the original question is used, which usually still finds the
+   proper nouns. */
+async function toEnglish(q, lang) {
+  if (!lang || lang === "en") return q;
+  try {
+    var out = await callModel(
+      "Translate the user's question into English. Return only the translation, " +
+      "no quotes, no commentary, no explanation. Keep proper nouns as they are.",
+      q, 200
+    );
+    var t = String(out).trim();
+    return t.length > 2 ? t.slice(0, MAX_Q_LEN) : q;
+  } catch (e) {
+    return q;
+  }
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
@@ -70,8 +135,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  var ip = clientIp(req);
-  if (rateLimited(ip)) {
+  var ip = E.clientIp(req);
+  if (limited(ip)) {
     res.status(429).json({ ok: false, error: "Too many questions from this connection right now. Try again in a minute." });
     return;
   }
@@ -86,15 +151,20 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  var lang = String((body && body.lang) || "en").toLowerCase();
+  if (!LANGS[lang]) lang = "en";
+
   if (!process.env.ANTHROPIC_API_KEY) {
     res.status(503).json({ ok: false, error: "The live analysis is not configured yet." });
     return;
   }
 
+  var qEn = await toEnglish(q, lang);
+
   var corpusHits, articles;
   try {
-    corpusHits = searchCorpus(q);
-    articles = searchArticles(q, TOP_N_ARTICLES);
+    corpusHits = E.searchCorpus(qEn);
+    articles = E.searchArticles(qEn, TOP_N_ARTICLES);
   } catch (e) {
     res.status(500).json({ ok: false, error: "retrieval failed" });
     return;
@@ -104,16 +174,30 @@ module.exports = async function handler(req, res) {
     res.status(200).json({
       ok: true,
       refused: true,
+      lang: lang,
       message: "The approved sources do not appear to address that question."
     });
     return;
   }
 
-  var passageLines = corpusHits.map(function (h, n) {
-    var m = idx.meta[h.i];
-    var d = idx.docs[m[0]];
-    var cite = d.cite + " §" + m[1];
-    return "[" + (n + 1) + "] " + cite + ": \"" + idx.excerpts[h.i] + "\"";
+  var passages = E.shapePassages(corpusHits);
+  try {
+    passages = await N.localize(passages, lang);
+  } catch (e) {
+    passages = passages.map(function (p) {
+      var c = Object.assign({}, p);
+      c.textLang = "en";
+      c.native = lang === "en";
+      return c;
+    });
+  }
+
+  var langName = LANGS[lang];
+  var passageLines = passages.map(function (p, n) {
+    var tag = p.native || lang === "en"
+      ? ""
+      : " (English text, no " + langName + " edition published)";
+    return "[" + (n + 1) + "] " + p.cite + tag + ": \"" + p.text + "\"";
   }).join("\n");
 
   var articleLines = articles.map(function (a, n) {
@@ -126,30 +210,12 @@ module.exports = async function handler(req, res) {
     (passageLines || "(none retrieved)") +
     "\n\nCOMMENTARY (describe only in your own words, never quote as Church teaching, always attribute):\n" +
     (articleLines || "(none retrieved)") +
-    "\n\nQUESTION: " + q;
+    "\n\nQUESTION: " + q +
+    (lang === "en" ? "" : "\n(The same question in English, for your reference: " + qEn + ")");
 
   var raw;
   try {
-    var upstream = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 700,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: userMsg }]
-      })
-    });
-    if (!upstream.ok) {
-      res.status(502).json({ ok: false, error: "The analysis service is unavailable right now." });
-      return;
-    }
-    var data = await upstream.json();
-    raw = (data.content && data.content[0] && data.content[0].text) || "";
+    raw = await callModel(SYSTEM_PROMPT + langClause(lang), userMsg, 900);
   } catch (e) {
     res.status(502).json({ ok: false, error: "The analysis service is unavailable right now." });
     return;
@@ -163,28 +229,18 @@ module.exports = async function handler(req, res) {
     parsed = { answer: raw, differ: "", next: [] };
   }
 
-  /* The prompt asks for no em dashes. Models comply most of the time,
-     which is not the same as complying. This applies only to prose the
-     model wrote; quoted corpus passages pass through untouched, because
-     an em dash in a Vatican text is the Vatican's. */
-  function noDashes(x) {
-    return String(x || "")
-      .replace(/\s*[\u2014\u2013]\s*/g, ", ")
-      .replace(/,\s*,/g, ",")
-      .replace(/\s+,/g, ",")
-      .replace(/,\s*([.!?;:])/g, "$1");
-  }
-
   res.status(200).json({
     ok: true,
     refused: false,
+    lang: lang,
     answer: noDashes(parsed.answer),
     differ: noDashes(parsed.differ),
     next: Array.isArray(parsed.next) ? parsed.next.slice(0, 3).map(noDashes) : [],
-    passages: corpusHits.map(function (h) {
-      var m = idx.meta[h.i];
-      var d = idx.docs[m[0]];
-      return { cite: d.cite + " §" + m[1], url: d.url, text: idx.excerpts[h.i] };
+    passages: passages.map(function (p) {
+      return {
+        cite: p.cite, url: p.url, text: p.text,
+        textLang: p.textLang, native: !!p.native
+      };
     }),
     articles: articles.map(function (a) {
       return { title: a.title, author: a.author, publisher: a.publisher, url: a.url, date: a.date };
