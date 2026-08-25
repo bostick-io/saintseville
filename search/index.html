@@ -243,7 +243,7 @@
       html += cHits.map(function (h) {
         var m = idx.meta[h.i], d = idx.docs[m[0]];
         return '<blockquote class="ask-passage"><p>' + highlight(idx.excerpts[h.i], q) + "</p>" +
-          '<footer><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.cite + " §" + m[1]) + " &mdash; read the full text</a></footer></blockquote>";
+          '<footer><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.cite + " §" + m[1]) + " &middot; read the full text</a></footer></blockquote>";
       }).join("");
     }
     if (aHits.length) {
