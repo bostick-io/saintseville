@@ -163,12 +163,24 @@ module.exports = async function handler(req, res) {
     parsed = { answer: raw, differ: "", next: [] };
   }
 
+  /* The prompt asks for no em dashes. Models comply most of the time,
+     which is not the same as complying. This applies only to prose the
+     model wrote; quoted corpus passages pass through untouched, because
+     an em dash in a Vatican text is the Vatican's. */
+  function noDashes(x) {
+    return String(x || "")
+      .replace(/\s*[\u2014\u2013]\s*/g, ", ")
+      .replace(/,\s*,/g, ",")
+      .replace(/\s+,/g, ",")
+      .replace(/,\s*([.!?;:])/g, "$1");
+  }
+
   res.status(200).json({
     ok: true,
     refused: false,
-    answer: String(parsed.answer || ""),
-    differ: String(parsed.differ || ""),
-    next: Array.isArray(parsed.next) ? parsed.next.slice(0, 3).map(String) : [],
+    answer: noDashes(parsed.answer),
+    differ: noDashes(parsed.differ),
+    next: Array.isArray(parsed.next) ? parsed.next.slice(0, 3).map(noDashes) : [],
     passages: corpusHits.map(function (h) {
       var m = idx.meta[h.i];
       var d = idx.docs[m[0]];
