@@ -214,6 +214,26 @@ async function load(docIdx, lang) {
   return inflight[key];
 }
 
+/* The English index stores each paragraph cut to roughly 360 characters
+   at a word boundary, with an ellipsis, because the site quotes briefly
+   and says so in its own footer. When the native-language text started
+   coming from vatican.va it arrived whole, which quietly made an Italian
+   reader's passage three times the length of an English reader's and made
+   "quoted briefly" true in only one language. Same cut, same rule, every
+   language. Anyone who wants the paragraph entire follows the citation
+   to the Holy See, which is the point of the citation. */
+var EXCERPT_MAX = 360;
+var ELLIPSIS = "\u2026";
+
+function excerpt(t) {
+  t = String(t || "").trim();
+  if (t.length <= EXCERPT_MAX) return t;
+  var cut = t.slice(0, EXCERPT_MAX - 1);
+  var sp = cut.lastIndexOf(" ");
+  if (sp > EXCERPT_MAX * 0.85) cut = cut.slice(0, sp);
+  return cut.replace(/[\s.,;:!?\u2013\u2014-]+$/, "") + ELLIPSIS;
+}
+
 /* Swaps passage text for the target language wherever a published text
    exists. Each passage says which it is, so the page can be honest
    about the one or two that stayed in English. */
@@ -239,7 +259,8 @@ async function localize(passages, lang) {
     var m = maps[p.docIdx];
     var t = m && m[p.para];
     if (t) {
-      c.text = t;
+      c.text = excerpt(t);
+      c.full = t.length > c.text.length;
       c.textLang = lang;
       c.native = true;
       var spec = SOURCES[p.docIdx];
@@ -261,6 +282,7 @@ function available(lang) {
 
 module.exports = {
   localize: localize,
+  excerpt: excerpt,
   load: load,
   available: available,
   decode: decode,
