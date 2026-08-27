@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-25",
+ "updated": "2026-08-27",
  "note": "The registry of everything Saint Seville can search. kind: corpus = full passage index, quoted and cited in answers. kind: article = indexed commentary, described and linked, never quoted as Church teaching.",
  "sources": [
   {
@@ -348,6 +348,80 @@
     "Won Buddhism",
     "universalism",
     "open access"
+   ]
+  },
+  {
+   "id": "wingate-omissive-bias-2026",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Omissive Bias in Religious Representation: Benchmarking LLM Answers to Everyday Ethical Decision-making",
+   "short": "Wingate, omissive bias",
+   "author": "David Wingate and the Consortium for the Evaluation of Faith and Ethics in AI",
+   "publisher": "arXiv preprint 2605.24319",
+   "date": "2026-05-23",
+   "url": "https://arxiv.org/html/2605.24319v1",
+   "abstract": "Puts 150 everyday ethical questions to 27 frontier and open models and measures how often they reason from religion. They do so in a small fraction of answers, far below the share of cases in which surveyed people said religious reasoning would be relevant. The authors call it omissive bias: the models are not hostile to faith, they leave it out. A cross-faith consortium of Brigham Young, Baylor, Notre Dame and Yeshiva. Preprint, not peer reviewed.",
+   "tags": [
+    "measurement",
+    "secular default",
+    "benchmark",
+    "omissive bias",
+    "preprint"
+   ]
+  },
+  {
+   "id": "hackenburg-ai-outpersuade-2026",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "AI Systems Out-persuade Expert Humans",
+   "short": "Hackenburg et al., persuasion",
+   "author": "Kobi Hackenburg and colleagues, Oxford and the UK AI Security Institute",
+   "publisher": "arXiv preprint 2606.16475",
+   "date": "2026-06-15",
+   "url": "https://arxiv.org/abs/2606.16475",
+   "abstract": "Across four preregistered experiments and almost nineteen thousand conversations, AI systems were more persuasive than expert humans, including a group of competitive debaters containing four world champions, even when those humans chose their own issues, prepared in advance and were paid to win. The advantage disappeared when models were held to human message length and response speed. Relevant here because persuasion at that level changes what it means for a machine to give religious counsel. Preprint, not peer reviewed.",
+   "tags": [
+    "persuasion",
+    "counsel",
+    "risk",
+    "preprint"
+   ]
+  },
+  {
+   "id": "davison-machine-learning-analogy-2021",
+   "kind": "article",
+   "tier": "commentary",
+   "title": "Machine Learning and Theological Traditions of Analogy",
+   "short": "Davison, Modern Theology",
+   "author": "Andrew Davison",
+   "publisher": "Modern Theology 37, no. 2",
+   "date": "2021-04-01",
+   "url": "https://onlinelibrary.wiley.com/doi/10.1111/moth.12682",
+   "abstract": "Reads machine learning through the theological tradition of analogy, a scholastic question rather than a modern one, and treats the model as an instrument rather than an agent. The author is an Anglican priest and Regius Professor of Divinity at Oxford, so this is serious engagement with Thomistic categories from just outside the Catholic tradition.",
+   "tags": [
+    "analogy",
+    "scholastic",
+    "instrumental cause",
+    "Thomism"
+   ]
+  },
+  {
+   "id": "economist-artificial-transcendence-2026",
+   "kind": "article",
+   "tier": "journalism",
+   "title": "AI is changing religion and religions are trying to change AI",
+   "short": "The Economist, Artificial transcendence",
+   "author": "unsigned",
+   "publisher": "The Economist, International section",
+   "date": "2026-08-27",
+   "url": "https://www.economist.com/international/2026/08/27/ai-is-changing-religion-and-religions-are-trying-to-change-ai",
+   "abstract": "A survey of how religious institutions are trying to shape frontier AI and how AI is reshaping religious practice. Reports the magazine's own finding that leading models sit further toward the secular end of the World Values Survey axis than the public of any country measured. Indexed as journalism rather than scholarship: it is a useful map and a pointer to primary work, and where this register relies on a fact from it, the register cites the underlying paper instead.",
+   "tags": [
+    "journalism",
+    "secular default",
+    "survey",
+    "alignment",
+    "map of the field"
    ]
   }
  ],
